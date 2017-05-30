@@ -25,6 +25,7 @@ type Config struct {
 	key           string
 	encryptMethod string
 	timeout       int
+	v4only        bool
 }
 
 var (
@@ -50,6 +51,7 @@ func DefaultConfig() Config {
 		key:           "",
 		encryptMethod: "chacha20-ietf-poly1305",
 		timeout:       120,
+		v4only:        false,
 	}
 }
 
@@ -67,6 +69,7 @@ func init() {
 	flags.StringVar(&config.key, "key", "", "Key of your server, in base64")
 	flags.StringVarP(&config.encryptMethod, "encrypt_method", "m", "chacha20-ietf-poly1305", "Encryption method")
 	flags.IntVarP(&config.timeout, "timeout", "t", 120, "Socket timeout in seconds")
+	flags.BoolVar(&config.v4only, "v4only", false, "Make server to proxy IPv4 only (server can still listen on IPv6)")
 	flags.StringVarP(&pidFile, "pid_file", "f", "", "The pid file path")
 	flags.StringVarP(&configFile, "config_file", "c", "", "The path to config file")
 	flags.StringVar(&managerAddress, "manager_address", "", "Manager API address, either a unix socket or net address")
@@ -192,6 +195,9 @@ func ParseConfigFile(filename string) (config Config, err error) {
 			return
 		}
 	}
+	if s, ok := configJson["v4only"]; ok {
+		config.v4only, _ = s.(bool)
+	}
 	return
 }
 
@@ -228,17 +234,26 @@ func main() {
 	}
 	s.FDSetMax(maxConn)
 	if serverMode { // server
-		manager := s.NewServerManager(config.serverHost)
+		serverConfig := s.ServerConfig{
+			ServerHost:    config.serverHost,
+			Method:        config.encryptMethod,
+			ConnectV4Only: config.v4only,
+			Timeout:       time.Duration(config.timeout) * time.Second,
+		}
+		manager := s.NewServerManager()
 		if config.portPassword != nil { // multiuser mode
 			for port, password := range config.portPassword {
-				keyDeriver := s.NewKeyDeriver([]byte(password))
-				err = manager.Add(port, keyDeriver, config.encryptMethod, config.timeout)
+				serverConfig.ServerPort = uint16(port)
+				serverConfig.KeyDeriver = s.NewKeyDeriver([]byte(password))
+				err = manager.Add(serverConfig)
 				if err != nil {
 					return
 				}
 			}
 		} else {
-			err = manager.Add(uint16(config.serverPort), s.NewKeyDeriver([]byte(config.password)), config.encryptMethod, config.timeout)
+			serverConfig.ServerPort = uint16(config.serverPort)
+			serverConfig.KeyDeriver = s.NewKeyDeriver([]byte(config.password))
+			err = manager.Add(serverConfig)
 			if err != nil {
 				return
 			}
