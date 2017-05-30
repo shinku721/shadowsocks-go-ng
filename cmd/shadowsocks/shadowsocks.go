@@ -251,7 +251,16 @@ func main() {
 			}
 		}
 	} else { // client
-		client, err := s.NewClientContext(config.serverHost, uint16(config.serverPort), config.localHost, uint16(config.localPort), s.NewKeyDeriver([]byte(config.password)), config.encryptMethod, config.timeout)
+		clientConfig := s.ClientConfig{
+			ServerHost: config.serverHost,
+			ServerPort: uint16(config.serverPort),
+			LocalHost:  config.localHost,
+			LocalPort:  uint16(config.localPort),
+			Method:     config.encryptMethod,
+			KeyDeriver: s.NewKeyDeriver([]byte(config.password)),
+			Timeout:    time.Duration(config.timeout) * time.Second,
+		}
+		client, err := s.NewClientContext(clientConfig)
 		if err != nil {
 			log.Panic(err)
 		}

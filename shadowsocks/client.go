@@ -29,19 +29,38 @@ type ClientContext struct {
 	httpConnectionManager *HTTPConnectionManager
 }
 
-// NewClientContext creates a new client context.
-func NewClientContext(addr string, port uint16, local_addr string, local_port uint16, keyDeriver io.Reader, method string, timeout int) (ctx ClientContext, err error) {
-	if IsIPv6(local_addr) {
-		local_addr = "[" + local_addr + "]"
+type ClientConfig struct {
+	ServerHost string
+	ServerPort uint16
+	LocalHost  string
+	LocalPort  uint16
+	Method     string
+	KeyDeriver io.Reader
+	Timeout    time.Duration
+}
+
+func DefaultClientConfig() ClientConfig {
+	return ClientConfig{
+		ServerHost: "127.0.0.1",
+		ServerPort: 8388,
+		LocalHost:  "127.0.0.1",
+		LocalPort:  1080,
+		Method:     "chacha20-ietf-poly1305",
+		KeyDeriver: nil,
+		Timeout:    300 * time.Second,
 	}
-	cipherInfo, ok := Ciphers[method]
+}
+
+// NewClientContext creates a new client context.
+func NewClientContext(config ClientConfig) (ctx ClientContext, err error) {
+	cipherInfo, ok := Ciphers[config.Method]
 	if !ok {
-		err = fmt.Errorf("Unknown cipher: %s", method)
+		err = fmt.Errorf("Unknown cipher: %s", config.Method)
 		return
 	}
 	key := make([]byte, cipherInfo.keySize)
 	var n int
-	n, err = keyDeriver.Read(key)
+	n, err = config.KeyDeriver.Read(key)
 	if err != nil {
 		return
 	}
@@ -49,22 +68,18 @@ func NewClientContext(addr string, port uint16, local_addr string, local_port ui
 		err = fmt.Errorf("Insufficient key size")
 		return
 	}
-	if IsIPv6(addr) {
-		addr = "[" + addr + "]"
-	}
-	serverAddr := addr + ":" + strconv.Itoa(int(port))
 	var server net.Listener
-	server, err = net.Listen("tcp", local_addr+":"+strconv.Itoa(int(local_port)))
+	server, err = net.Listen("tcp", WrapAddr(config.LocalHost, config.LocalPort))
 	if err != nil {
 		return
 	}
 	ctx = ClientContext{
 		listener:      server,
 		running:       make(chan bool, 1),
-		serverAddr:    serverAddr,
+		serverAddr:    WrapAddr(config.ServerHost, config.ServerPort),
 		cipherFactory: cipherInfo.newFactory(key),
 		err:           make(chan error, 1),
-		timeout:       time.Duration(timeout) * time.Second,
+		timeout:       config.Timeout,
 	}
 	ctx.running <- false
 	return

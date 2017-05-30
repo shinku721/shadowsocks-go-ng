@@ -15,11 +15,22 @@ var INVALID_ADDR_TYPE = errors.New("invalid address type")
 // It does not guarantee that the address is valid,
 // so you should only check it on an IP address or
 // a hostname.
-func IsIPv6(addr string) bool {
-	if r := strings.Index(addr, ":"); r != -1 {
+func IsIPv6(host string) bool {
+	if r := strings.Index(host, ":"); r != -1 {
 		return true
 	}
 	return false
+}
+
+func WrapIPv6(host string) string {
+	if IsIPv6(host) {
+		return "[" + host + "]"
+	}
+	return host
+}
+
+func WrapAddr(host string, port uint16) string {
+	return WrapIPv6(host) + ":" + strconv.Itoa(int(port))
 }
 
 // ParseAddress parses an address buffer into string.

@@ -3,6 +3,7 @@ package shadowsocks
 import (
 	"errors"
 	"io"
+	"time"
 )
 
 var SERVER_NOT_EXIST = errors.New("Server does not exist")
@@ -21,8 +22,13 @@ func NewServerManager(host string) ServerManager {
 }
 
 func (m *ServerManager) Add(port uint16, keyDeriver io.Reader, method string, timeout int) (err error) {
+	config := DefaultServerConfig()
+	config.ServerHost = m.host
+	config.ServerPort = port
+	config.Method = method
+	config.Timeout = time.Duration(timeout) * time.Second
 	var ctx ServerContext
-	ctx, err = NewServerContext(m.host, port, keyDeriver, method, timeout)
+	ctx, err = NewServerContext(config)
 	if err != nil {
 		return
 	}

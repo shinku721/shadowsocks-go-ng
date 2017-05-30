@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"net"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -23,25 +22,46 @@ type ServerContext struct {
 	timeout        time.Duration
 }
 
+// ServerConfig is a set of configuration to create a single server
+type ServerConfig struct {
+	ServerHost     string
+	ServerPort     uint16
+	Method         string
+	KeyDeriver     io.Reader
+	ConnectV4Only  bool
+	ConnectTimeout time.Duration
+	Timeout        time.Duration
+}
+
+// DefaultServerConfig creates a default recommended set of config
+func DefaultServerConfig() ServerConfig {
+	return ServerConfig{
+		ServerHost:     "::",
+		ServerPort:     8388,
+		Method:         "chacha20-ietf-poly1305",
+		KeyDeriver:     nil,
+		ConnectV4Only:  false,
+		ConnectTimeout: 15 * time.Second,
+		Timeout:        300 * time.Second,
+	}
+}
+
 // NewServerContext creates a new instance of ServerContext
 // with specified arguments.
-func NewServerContext(host string, port uint16, keyDeriver io.Reader, method string, timeout int) (ctx ServerContext, err error) {
-	if IsIPv6(host) {
-		host = "[" + host + "]"
-	}
+func NewServerContext(config ServerConfig) (ctx ServerContext, err error) {
 	var server net.Listener
-	server, err = net.Listen("tcp", host+":"+strconv.Itoa(int(port)))
+	server, err = net.Listen("tcp", WrapAddr(config.ServerHost, config.ServerPort))
 	if err != nil {
 		return
 	}
-	cipherInfo, ok := Ciphers[method]
+	cipherInfo, ok := Ciphers[config.Method]
 	if !ok {
-		err = fmt.Errorf("Unknown cipher: %s", method)
+		err = fmt.Errorf("Unknown cipher: %s", config.Method)
 		return
 	}
 	key := make([]byte, cipherInfo.keySize)
 	var n int
-	n, err = keyDeriver.Read(key)
+	n, err = config.KeyDeriver.Read(key)
 	if err != nil {
 		return
 	}
@@ -53,10 +73,10 @@ func NewServerContext(host string, port uint16, keyDeriver io.Reader, method str
 		server:         server,
 		running:        make(chan bool, 1),
 		cipherFactory:  cipherInfo.newFactory(key),
-		connectV4Only:  false,
+		connectV4Only:  config.ConnectV4Only,
 		err:            make(chan error, 1),
-		connectTimeout: 30 * time.Second,
-		timeout:        time.Duration(timeout) * time.Second,
+		connectTimeout: config.ConnectTimeout,
+		timeout:        config.Timeout,
 	}
 	ctx.running <- false
 	return
