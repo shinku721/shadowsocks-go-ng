@@ -134,13 +134,9 @@ func (m *HTTPConnectionManager) run() {
 				}
 				trconn := PlainConn{rconn.(*net.TCPConn)}
 				wtrconn := m.ctx.cipherFactory.Wrap(trconn)
-				if err = wtrconn.SSWrite(&SSBuffer{buf: b}); err != nil {
-					wtrconn.Close()
-					m.err <- err
-					continue
-				}
+				dwtrconn := NewDelayInitConn(wtrconn, b)
 				m.res <- &HTTPConnCtx{
-					conn: wtrconn,
+					conn: dwtrconn,
 					addr: addr,
 				}
 			} else {
