@@ -13,7 +13,7 @@ install:
   - go get -d ./...
 
 build_script:
-  - go install cmd/shadowsocks
+  - go install ./cmd/shadowsocks
 
 test_script:
   - go test -v ./...
