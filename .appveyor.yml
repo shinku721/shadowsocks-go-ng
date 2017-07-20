@@ -10,7 +10,7 @@ install:
   - set PATH=c:\go\bin;%GOPATH%\bin;%PATH%
   - go version
   - go env
-  - go get -d ./...
+  - go get -d -t ./...
 
 build_script:
   - go install ./cmd/shadowsocks
