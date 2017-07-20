@@ -17,6 +17,7 @@ func (c *DelayInitConn) SSWrite(buf *SSBuffer) error {
 		copy(tmpbuf[:li], c.initBuf)
 		copy(tmpbuf[li:], buf.buf)
 		c.initBuf = nil
+		buf.buf = buf.buf[:0]
 		return c.origConn.SSWrite(&SSBuffer{buf: tmpbuf})
 	}
 	return c.origConn.SSWrite(buf)
