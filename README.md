@@ -1,5 +1,8 @@
 shadowsocks-goo
 ===
+[![Travis Status](https://travis-ci.org/shinku721/shadowsocks-goo.svg?branch=master)](https://travis-ci.org/shinku721/shadowsocks-goo)
+[![Appveyor Status](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva/branch/master?svg=true)](https://ci.appveyor.com/project/shinku721/shadowsocks-goo)
+
 Yet another shadowsocks implementation in Go.
 
 Current status
