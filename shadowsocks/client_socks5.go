@@ -79,7 +79,7 @@ func (ctx *ClientContext) HandleSocks5(tconn SSConn, buf *SSBuffer) (err error) 
 	buf.buf = buf.buf[:len(buf.buf)-3]
 
 	rbuf.buf = rbuf.buf[:10]
-	// We have no server bounded address!
+	// We have no server bound address!
 	copy(rbuf.buf, []byte{0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 	if err = tconn.SSWrite(rbuf); err != nil {
 		return
