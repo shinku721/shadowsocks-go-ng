@@ -3,6 +3,7 @@
 package shadowsocks
 
 import (
+	"bytes"
 	"encoding/binary"
 	"net"
 	"syscall"
@@ -26,6 +27,7 @@ func getOrigAddr(conn *net.TCPConn) (*net.TCPAddr, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer f.Close()
 	fd := f.Fd()
 	syscall.SetNonblock(int(fd), true)
 
@@ -60,12 +62,45 @@ func DetectRedir(tconn SSConn) bool {
 	if err != nil {
 		return false
 	}
-	if orig.IP.Equal(addr.IP) && orig.Port == addr.Port {
+	if orig == nil || orig.IP.Equal(addr.IP) && orig.Port == addr.Port {
 		return false
 	}
 	return true
 }
 
-func (ctx *ClientContext) HandleRedir(tconn SSConn, buf *SSBuffer) error {
-	return nil
+func (ctx *ClientContext) HandleRedir(tconn SSConn, buf *SSBuffer) (err error) {
+	rbuf := NewBuffer()
+	addr, _ := getOrigAddr(tconn.(PlainConn).TCPConn)
+	if bytes.Equal(addr.IP[:12], v4InV6Prefix) {
+		buf.buf = buf.buf[:7]
+		buf.buf[0] = 0x01
+		copy(buf.buf[1:5], addr.IP[12:])
+		binary.BigEndian.PutUint16(buf.buf[5:], uint16(addr.Port))
+	} else {
+		buf.buf = buf.buf[:19]
+		buf.buf[0] = 0x04
+		copy(buf.buf[1:17], addr.IP[:])
+		binary.BigEndian.PutUint16(buf.buf[17:], uint16(addr.Port))
+	}
+
+	var rconn net.Conn
+	rconn, err = net.Dial("tcp", ctx.serverAddr)
+	if err != nil {
+		return
+	}
+	defer rconn.Close()
+	rconn.(*net.TCPConn).SetNoDelay(true)
+	trconn := PlainConn{rconn.(*net.TCPConn)}
+	wrconn := ctx.cipherFactory.Wrap(trconn)
+
+	res := make(chan error, 1)
+	rres := make(chan error, 1)
+	go Pipe(tconn, wrconn, buf, res)
+	go Pipe(wrconn, tconn, rbuf, rres)
+
+	select {
+	case err = <-res:
+	case err = <-rres:
+	}
+	return
 }
