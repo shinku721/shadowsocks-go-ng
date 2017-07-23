@@ -11,15 +11,19 @@ import (
 	"testing"
 )
 
+var socks5client, socks4client, httpclient proxyclient.Dial
+
 func TestMain(m *testing.M) {
+	fmt.Println("prepare testing")
 	// start http server
 	http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello")
 	})
 	go func() {
-		log.Fatal(http.ListenAndServe("127.0.0.1:8000", nil))
+		log.Fatal(http.ListenAndServe(":8000", nil))
 	}()
 	fmt.Println("HTTP server is up")
+
 	// start shadowsocks server
 	serverConfig := DefaultServerConfig()
 	serverConfig.ServerHost = "127.0.0.1"
@@ -28,6 +32,7 @@ func TestMain(m *testing.M) {
 	server, _ := NewServerContext(serverConfig)
 	go server.Run()
 	fmt.Println("ShadowSocks server is up")
+
 	// start shadowsocks client
 	clientConfig := DefaultClientConfig()
 	clientConfig.ServerPort = 7000
@@ -36,26 +41,107 @@ func TestMain(m *testing.M) {
 	client, _ := NewClientContext(clientConfig)
 	go client.Run()
 	fmt.Println("Shadowsocks client is up")
+
+	proxy, _ := url.Parse("socks5://127.0.0.1:6000")
+	socks5client, _ = proxyclient.NewClient(proxy)
+	proxy, _ = url.Parse("socks4a://127.0.0.1:6000")
+	socks4client, _ = proxyclient.NewClient(proxy)
+	proxy, _ = url.Parse("http://127.0.0.1:6000")
+	httpclient, _ = proxyclient.NewClient(proxy)
+
 	os.Exit(m.Run())
 }
 
 func TestSimpleSocks5(t *testing.T) {
-	proxy, _ := url.Parse("socks5://127.0.0.1:6000")
-	dial, _ := proxyclient.NewClient(proxy)
 	client := &http.Client{
 		Transport: &http.Transport{
-			DialContext: dial.Context,
+			DialContext: socks5client.Context,
 		},
 	}
-	request, err := client.Get("http://127.0.0.1:8000/hello")
-	if err != nil {
-		t.Fatal(err)
+	for i := 0; i < 10; i++ {
+		fmt.Printf("testing socks5 request ipv4 round %d\n", i)
+		request, err := client.Get("http://127.0.0.1:8000/hello")
+		if err != nil {
+			t.Fatal(err)
+		}
+		content, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(content) != "Hello" {
+			t.Fatal("Wrong content:", string(content))
+		}
 	}
-	content, err := ioutil.ReadAll(request.Body)
-	if err != nil {
-		t.Fatal(err)
+	for i := 0; i < 10; i++ {
+		fmt.Printf("testing socks5 request ipv6 round %d\n", i)
+		request, err := client.Get("http://[::1]:8000/hello")
+		if err != nil {
+			t.Fatal(err)
+		}
+		content, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(content) != "Hello" {
+			t.Fatal("Wrong content:", string(content))
+		}
 	}
-	if string(content) != "Hello" {
-		t.Fatal("Wrong content:", string(content))
+}
+
+func TestSimpleSocks4(t *testing.T) {
+	client := &http.Client{
+		Transport: &http.Transport{
+			DialContext: socks4client.Context,
+		},
+	}
+	for i := 0; i < 10; i++ {
+		fmt.Printf("testing socks4 request ipv4 round %d\n", i)
+		request, err := client.Get("http://127.0.0.1:8000/hello")
+		if err != nil {
+			t.Fatal(err)
+		}
+		content, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(content) != "Hello" {
+			t.Fatal("Wrong content:", string(content))
+		}
+	}
+}
+
+func TestSimpleSocks4a(t *testing.T) {
+	client := &http.Client{
+		Transport: &http.Transport{
+			DialContext: socks4client.Context,
+		},
+	}
+	for i := 0; i < 10; i++ {
+		fmt.Printf("testing socks4a request hostname round %d\n", i)
+		request, err := client.Get("http://localhost:8000/hello")
+		if err != nil {
+			t.Fatal(err)
+		}
+		content, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(content) != "Hello" {
+			t.Fatal("Wrong content:", string(content))
+		}
+	}
+	for i := 0; i < 10; i++ {
+		fmt.Printf("testing socks4a request ipv6 round %d\n", i)
+		request, err := client.Get("http://[::1]:8000/hello")
+		if err != nil {
+			t.Fatal(err)
+		}
+		content, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(content) != "Hello" {
+			t.Fatal("Wrong content:", string(content))
+		}
 	}
 }
