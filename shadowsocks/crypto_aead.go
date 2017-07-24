@@ -47,11 +47,16 @@ type AEADConn struct {
 }
 
 func (c *AEADConn) SSRead(b *SSBuffer) (err error) {
-	if c.readerAEAD == nil {
-		salt := make([]byte, c.factory.saltSize)
+	firstTime := c.readerAEAD == nil
+	var salt []byte
+	if firstTime {
+		salt = make([]byte, c.factory.saltSize)
 		_, err = io.ReadFull(c.conn.TCPConn, salt)
 		if err != nil {
 			return
+		}
+		if saltFilter.Contains(salt) {
+			return AUTH_ERROR // todo: use another error message
 		}
 		h := hkdf.New(sha1.New, c.factory.key, salt, []byte(HKDF_INFO))
 		skey := make([]byte, c.factory.keySize)
@@ -108,6 +113,10 @@ func (c *AEADConn) SSRead(b *SSBuffer) (err error) {
 	c.readerNonce.Inc()
 
 	b.buf = b.buf[:pos+n]
+	
+	if firstTime {
+		saltFilter.Add(salt)
+	}
 	return
 }
 

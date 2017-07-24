@@ -49,6 +49,10 @@ func (s *StreamCipherConn) SSRead(b *SSBuffer) (err error) {
 		if err != nil {
 			return
 		}
+		if saltFilter.Contains(iv) {
+			return AUTH_ERROR // todo: use another error message
+		}
+		saltFilter.Add(iv)
 		s.readerStream, err = s.factory.newDecipher(s.factory.key, iv)
 		if err != nil {
 			return
