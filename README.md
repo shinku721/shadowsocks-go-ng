@@ -17,8 +17,6 @@ Why one more implementation? (Design Consideration)
 1. Lightweight
     - small executable
     - small memory footprint
-
-    (These are due to go runtime, however.)
 2. Compatibility
     - [ ] Compatible to libev version, including
         - [ ] command line options
@@ -27,18 +25,37 @@ Why one more implementation? (Design Consideration)
     - [x] Cross-platform
 3. Flexibility
     - [ ] Well-arranged source code making it easy to modify and extend
-    - [ ] Multiple client protocol support on one port, including
-        - [x] socks5
-        - [x] socks4a
-        - [x] HTTP proxy
-        - [ ] iptables redir
+    - [x] Multiple client protocols support on the same port
     - [ ] Configurable ciphers and protocols through compiler flags
 4. Documentation
     - [ ] Full documentation on the whole project
 5. Security
     - [ ] Best-effort security
 
+Supported Ciphers
+---
+- AEAD
+  * chacha20-ietf-poly1305
+  * aes-256-gcm
+  * aes-192-gcm
+  * aes-128-gcm
+- Stream Ciphers (I beg you not use these, it's 2017 now!)
+  * aes-256-cfb
+  * aes-192-cfb
+  * aes-128-cfb
+  * aes-256-ctr
+  * aes-192-ctr
+  * aes-128-ctr
+
+Supported Client Protocols
+---
+* socks5
+* socks4a
+* HTTP proxy
+* iptables REDIRECT
+
 TODO
 ---
-- [ ] Better log
+- [ ] Better log format
 - [ ] Handle server and client listener errors
+- [ ] Salt filter
