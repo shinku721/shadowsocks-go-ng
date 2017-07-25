@@ -188,12 +188,7 @@ func (ctx *ServerContext) HandleConnection(conn net.Conn) {
 
 	rbuf := NewBuffer()
 	res := make(chan error, 1)
-	rres := make(chan error, 1)
-	go Pipe(wconn, trconn, buf, res)
-	go Pipe(trconn, wconn, rbuf, rres)
+	DPipe(wconn, trconn, buf, rbuf, res)
 
-	select {
-	case err = <-res:
-	case err = <-rres:
-	}
+	err = <-res
 }

@@ -82,6 +82,23 @@ func Pipe(reader, writer SSConn, buf *SSBuffer, res chan error) {
 	}
 }
 
+// DPipe is a utility to pipe bi-directionally.
+func DPipe(conn1, conn2 SSConn, buf12, buf21 *SSBuffer, res chan error) {
+	res1 := make(chan error, 1)
+	res2 := make(chan error, 1)
+	go Pipe(conn1, conn2, buf12, res1)
+	go Pipe(conn2, conn1, buf21, res2)
+
+	var err error
+	// No need to wait for the other res because go seems
+	// not to have any half-open capability
+	select {
+		case err = <-res1:
+		case err = <-res2:
+	}
+	res <- err
+}
+
 // PlainConn is a SSConn wrapped on TCPConn.
 type PlainConn struct {
 	TCPConn *net.TCPConn

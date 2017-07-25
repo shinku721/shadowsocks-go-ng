@@ -83,24 +83,16 @@ func (ctx *ClientContext) HandleRedir(tconn SSConn, buf *SSBuffer) (err error) {
 		binary.BigEndian.PutUint16(buf.buf[17:], uint16(addr.Port))
 	}
 
-	var rconn net.Conn
-	rconn, err = net.Dial("tcp", ctx.serverAddr)
+	var wrconn SSConn
+	wrconn, err = ctx.DialServer()
 	if err != nil {
 		return
 	}
-	defer rconn.Close()
-	rconn.(*net.TCPConn).SetNoDelay(true)
-	trconn := PlainConn{rconn.(*net.TCPConn)}
-	wrconn := ctx.cipherFactory.Wrap(trconn)
+	defer wrconn.Close()
 
 	res := make(chan error, 1)
-	rres := make(chan error, 1)
-	go Pipe(tconn, wrconn, buf, res)
-	go Pipe(wrconn, tconn, rbuf, rres)
+	DPipe(tconn, wrconn, buf, rbuf, res)
 
-	select {
-	case err = <-res:
-	case err = <-rres:
-	}
+	err = <-res
 	return
 }

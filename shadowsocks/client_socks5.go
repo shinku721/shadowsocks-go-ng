@@ -1,9 +1,5 @@
 package shadowsocks
 
-import (
-	"net"
-)
-
 /* DetectSocks5 detects whether the buffer conatins valid socks5 request.
    Protocol definition: RFC 1928
    https://www.ietf.org/rfc/rfc1928.txt
@@ -85,24 +81,16 @@ func (ctx *ClientContext) HandleSocks5(tconn SSConn, buf *SSBuffer) (err error) 
 		return
 	}
 
-	var rconn net.Conn
-	rconn, err = net.Dial("tcp", ctx.serverAddr)
+	var wrconn SSConn
+	wrconn, err = ctx.DialServer()
 	if err != nil {
 		return
 	}
-	defer rconn.Close()
-	rconn.(*net.TCPConn).SetNoDelay(true)
-	trconn := PlainConn{rconn.(*net.TCPConn)}
-	wrconn := ctx.cipherFactory.Wrap(trconn)
+	defer wrconn.Close()
 
 	res := make(chan error, 1)
-	rres := make(chan error, 1)
-	go Pipe(tconn, wrconn, buf, res)
-	go Pipe(wrconn, tconn, rbuf, rres)
+	DPipe(tconn, wrconn, buf, rbuf, res)
 
-	select {
-	case err = <-res:
-	case err = <-rres:
-	}
+	err = <-res
 	return
 }

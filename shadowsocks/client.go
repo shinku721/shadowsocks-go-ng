@@ -1,13 +1,10 @@
 package shadowsocks
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 	"io"
 	"log"
 	"net"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -176,63 +173,13 @@ func (ctx *ClientContext) HandleConnection(conn net.Conn) {
 	}
 }
 
-type ConnectInfo interface {
-	String() string
-	SSLen() int
-	SSBuf([]byte)
-}
-
-type IPInfo struct {
-	ip   net.IP
-	port uint16
-}
-
-func (me *IPInfo) String() string {
-	s := me.ip.String()
-	if IsIPv6(s) {
-		return "[" + s + "]:" + strconv.Itoa(int(me.port))
-	} else {
-		return s + ":" + strconv.Itoa(int(me.port))
+func (ctx *ClientContext) DialServer() (conn SSConn, err error) {
+	var rconn net.Conn
+	rconn, err = net.Dial("tcp", ctx.serverAddr)
+	if err != nil {
+		return
 	}
-}
-
-func (me *IPInfo) SSLen() int {
-	if bytes.Equal(me.ip[:12], v4InV6Prefix) {
-		return 1 + 4 + 2
-	} else {
-		return 1 + 16 + 2
-	}
-}
-
-func (me *IPInfo) SSBuf(p []byte) {
-	if bytes.Equal(me.ip[:12], v4InV6Prefix) {
-		p[0] = 0x01
-		copy(p[1:5], me.ip[12:])
-		binary.Write(bytes.NewBuffer(p[:5]), binary.BigEndian, &me.port)
-	} else {
-		p[0] = 0x04
-		copy(p[1:17], me.ip[:])
-		binary.Write(bytes.NewBuffer(p[:17]), binary.BigEndian, &me.port)
-	}
-}
-
-type HostInfo struct {
-	host string
-	port uint16
-}
-
-func (me *HostInfo) String() string {
-	return me.host + ":" + strconv.Itoa(int(me.port))
-}
-
-func (me *HostInfo) SSLen() int {
-	return 1 + 1 + len(me.host) + 2
-}
-
-func (me *HostInfo) SSBuf(p []byte) {
-	l := len(me.host)
-	p[0] = 0x03
-	p[1] = byte(l)
-	copy(p[2:], []byte(me.host))
-	binary.Write(bytes.NewBuffer(p[:2+l]), binary.BigEndian, &me.port)
+	rconn.(*net.TCPConn).SetNoDelay(true)
+	conn = ctx.cipherFactory.Wrap(PlainConn{rconn.(*net.TCPConn)})
+	return
 }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"log"
-	"net"
 	"strconv"
 	"strings"
 	"time"
@@ -124,13 +123,12 @@ func (m *HTTPConnectionManager) run() {
 				copy(b[2:2+len(host)], []byte(host))
 				binary.Write(bytes.NewBuffer(b[:2+len(host)]), binary.BigEndian, &port)
 
-				var rconn net.Conn
-				if rconn, err = net.Dial("tcp", m.ctx.serverAddr); err != nil {
+				var wtrconn SSConn
+				wtrconn, err = m.ctx.DialServer()
+				if err != nil {
 					m.err <- err
 					continue
 				}
-				trconn := PlainConn{rconn.(*net.TCPConn)}
-				wtrconn := m.ctx.cipherFactory.Wrap(trconn)
 				dwtrconn := NewDelayInitConn(wtrconn, b)
 				m.res <- &HTTPConnCtx{
 					conn: dwtrconn,
