@@ -51,3 +51,5 @@ var ERR_UNIMPLEMENTED = NewError("unimplemented")
 var ERR_INVALID_ADDR_TYPE = NewError("Invalid address type")
 
 var ERR_BUF_SIZE_EXCEED = NewError("Maximum buffer size exceeded")
+
+var ERR_INVALID_MANAGEMENT_ADDRESS = NewError("Invalid management address")

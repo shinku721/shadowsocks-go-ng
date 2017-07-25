@@ -1,7 +1,13 @@
 package shadowsocks
 
+import (
+	"net"
+	"strings"
+)
+
 type ServerManager struct {
 	servers map[string]*ServerContext
+	manager net.Listener
 }
 
 func NewServerManager() ServerManager {
@@ -34,5 +40,29 @@ func (m *ServerManager) Remove(host string, port uint16) (err error) {
 }
 
 func (m *ServerManager) Listen(addr string) (err error) {
-	return ERR_UNIMPLEMENTED
+	unixsock := true
+	i := strings.Index(addr, "]:")
+	if i != -1 {
+		if addr[0] == '[' && IsIP(addr[1:i]) != 6 {
+			unixsock = false
+		}
+	}
+	i = strings.Index(addr, ":")
+	if i != -1 {
+		if IsIP(addr[:i]) == 4 {
+			unixsock = false
+		}
+	}
+	if m.manager != nil {
+		m.manager.Close()
+		if !unixsock {
+			m.manager, err = net.Listen("udp", addr)
+		} else {
+			m.manager, err = net.Listen("unixpacket", addr)
+		}
+		if err != nil {
+			m.manager = nil
+		}
+	}
+	return
 }

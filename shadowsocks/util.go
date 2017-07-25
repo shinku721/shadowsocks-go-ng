@@ -8,19 +8,21 @@ import (
 	"strings"
 )
 
-// IsIPv6 checks whether an address is IPv6.
-// It does not guarantee that the address is valid,
-// so you should only check it on an IP address or
-// a hostname.
-func IsIPv6(host string) bool {
-	if r := strings.Index(host, ":"); r != -1 {
-		return true
+// IsIP checks whether the name is an IP address,
+// and returns IP version. Returns 0 on failure.
+func IsIP(host string) int {
+  ip := net.ParseIP(host)
+	if ip == nil {
+		return 0
 	}
-	return false
+	if strings.Contains(host, ":") {
+		return 6
+	}
+	return 4
 }
 
 func WrapAddr(host string, port uint16) string {
-	if IsIPv6(host) {
+	if IsIP(host) == 6 {
 		host = "[" + host + "]"
 	}
 	return host + ":" + strconv.Itoa(int(port))
@@ -54,7 +56,7 @@ func ParseAddress(buf []byte) (addr string, n int, err error) {
 			return
 		}
 		host := string(buf[2 : 2+alen])
-		if IsIPv6(host) {
+		if IsIP(host) == 6 {
 			host = "[" + host + "]"
 		}
 		var p16 uint16
