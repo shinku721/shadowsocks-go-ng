@@ -6,17 +6,17 @@ import (
 )
 
 var aes256gcminfo = CipherInfo{
-	newFactory: NewAES256GCMCipherFactory,
+	newFactory: newAES256GCMCipherFactory,
 	keySize:    32,
 }
 
 var aes192gcminfo = CipherInfo{
-	newFactory: NewAES256GCMCipherFactory,
+	newFactory: newAES256GCMCipherFactory,
 	keySize:    24,
 }
 
 var aes128gcminfo = CipherInfo{
-	newFactory: NewAES256GCMCipherFactory,
+	newFactory: newAES256GCMCipherFactory,
 	keySize:    16,
 }
 
@@ -26,7 +26,7 @@ func init() {
 	Ciphers["aes-128-gcm"] = &aes128gcminfo
 }
 
-func NewAESGCM(key []byte) (cipher.AEAD, error) {
+func newAESGCM(key []byte) (cipher.AEAD, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -34,14 +34,14 @@ func NewAESGCM(key []byte) (cipher.AEAD, error) {
 	return cipher.NewGCM(block)
 }
 
-func NewAES256GCMCipherFactory(key []byte) CipherFactory {
-	return NewAEADCipherFactory(NewAESGCM, 32, 32, key)
+func newAES256GCMCipherFactory(key []byte) CipherFactory {
+	return NewAEADCipherFactory(newAESGCM, 32, 32, key)
 }
 
-func NewAES192GCMCipherFactory(key []byte) CipherFactory {
-	return NewAEADCipherFactory(NewAESGCM, 24, 24, key)
+func newAES192GCMCipherFactory(key []byte) CipherFactory {
+	return NewAEADCipherFactory(newAESGCM, 24, 24, key)
 }
 
-func NewAES128GCMCipherFactory(key []byte) CipherFactory {
-	return NewAEADCipherFactory(NewAESGCM, 16, 16, key)
+func newAES128GCMCipherFactory(key []byte) CipherFactory {
+	return NewAEADCipherFactory(newAESGCM, 16, 16, key)
 }

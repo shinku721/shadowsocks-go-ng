@@ -5,7 +5,7 @@ import (
 	"crypto/cipher"
 )
 
-func NewCFBEnc(key []byte, iv []byte) (stream cipher.Stream, err error) {
+func newCFBEnc(key []byte, iv []byte) (stream cipher.Stream, err error) {
 	var block cipher.Block
 	if block, err = aes.NewCipher(key); err != nil {
 		return
@@ -13,7 +13,7 @@ func NewCFBEnc(key []byte, iv []byte) (stream cipher.Stream, err error) {
 	return cipher.NewCFBEncrypter(block, iv), nil
 }
 
-func NewCFBDec(key []byte, iv []byte) (stream cipher.Stream, err error) {
+func newCFBDec(key []byte, iv []byte) (stream cipher.Stream, err error) {
 	var block cipher.Block
 	if block, err = aes.NewCipher(key); err != nil {
 		return
@@ -21,7 +21,7 @@ func NewCFBDec(key []byte, iv []byte) (stream cipher.Stream, err error) {
 	return cipher.NewCFBDecrypter(block, iv), nil
 }
 
-func NewCTR(key []byte, iv []byte) (stream cipher.Stream, err error) {
+func newCTR(key []byte, iv []byte) (stream cipher.Stream, err error) {
 	var block cipher.Block
 	if block, err = aes.NewCipher(key); err != nil {
 		return
@@ -30,57 +30,57 @@ func NewCTR(key []byte, iv []byte) (stream cipher.Stream, err error) {
 }
 
 var aes256cfbinfo = CipherInfo{
-	newFactory: NewAES256CFBCipherFactory,
+	newFactory: newAES256CFBCipherFactory,
 	keySize:    32,
 }
 
-func NewAES256CFBCipherFactory(key []byte) CipherFactory {
-	return NewStreamCipherFactory(NewCFBEnc, NewCFBDec, 32, 16, key)
+func newAES256CFBCipherFactory(key []byte) CipherFactory {
+	return NewStreamCipherFactory(newCFBEnc, newCFBDec, 32, 16, key)
 }
 
 var aes192cfbinfo = CipherInfo{
-	newFactory: NewAES192CFBCipherFactory,
+	newFactory: newAES192CFBCipherFactory,
 	keySize:    24,
 }
 
-func NewAES192CFBCipherFactory(key []byte) CipherFactory {
-	return NewStreamCipherFactory(NewCFBEnc, NewCFBDec, 24, 16, key)
+func newAES192CFBCipherFactory(key []byte) CipherFactory {
+	return NewStreamCipherFactory(newCFBEnc, newCFBDec, 24, 16, key)
 }
 
 var aes128cfbinfo = CipherInfo{
-	newFactory: NewAES128CFBCipherFactory,
+	newFactory: newAES128CFBCipherFactory,
 	keySize:    16,
 }
 
-func NewAES128CFBCipherFactory(key []byte) CipherFactory {
-	return NewStreamCipherFactory(NewCFBEnc, NewCFBDec, 16, 16, key)
+func newAES128CFBCipherFactory(key []byte) CipherFactory {
+	return NewStreamCipherFactory(newCFBEnc, newCFBDec, 16, 16, key)
 }
 
 var aes256ctrinfo = CipherInfo{
-	newFactory: NewAES256CTRCipherFactory,
+	newFactory: newAES256CTRCipherFactory,
 	keySize:    32,
 }
 
-func NewAES256CTRCipherFactory(key []byte) CipherFactory {
-	return NewStreamCipherFactory(NewCTR, NewCTR, 32, 16, key)
+func newAES256CTRCipherFactory(key []byte) CipherFactory {
+	return NewStreamCipherFactory(newCTR, newCTR, 32, 16, key)
 }
 
 var aes192ctrinfo = CipherInfo{
-	newFactory: NewAES192CTRCipherFactory,
+	newFactory: newAES192CTRCipherFactory,
 	keySize:    24,
 }
 
-func NewAES192CTRCipherFactory(key []byte) CipherFactory {
-	return NewStreamCipherFactory(NewCTR, NewCTR, 24, 16, key)
+func newAES192CTRCipherFactory(key []byte) CipherFactory {
+	return NewStreamCipherFactory(newCTR, newCTR, 24, 16, key)
 }
 
 var aes128ctrinfo = CipherInfo{
-	newFactory: NewAES128CTRCipherFactory,
+	newFactory: newAES128CTRCipherFactory,
 	keySize:    16,
 }
 
-func NewAES128CTRCipherFactory(key []byte) CipherFactory {
-	return NewStreamCipherFactory(NewCTR, NewCTR, 16, 16, key)
+func newAES128CTRCipherFactory(key []byte) CipherFactory {
+	return NewStreamCipherFactory(newCTR, newCTR, 16, 16, key)
 }
 
 func init() {
