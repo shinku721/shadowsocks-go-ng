@@ -113,7 +113,7 @@ func (c *AEADConn) SSRead(b *SSBuffer) (err error) {
 	c.readerNonce.Inc()
 
 	b.buf = b.buf[:pos+n]
-	
+
 	if firstTime {
 		saltFilter.Add(salt)
 	}

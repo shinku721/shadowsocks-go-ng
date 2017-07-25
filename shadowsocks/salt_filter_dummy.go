@@ -1,15 +1,17 @@
-// +build !salt_filter_bloom,!salt_filter_cuckoo,!salt_filter_simple
+// +build no_salt_filter
 
 package shadowsocks
 
-type DummySaltFilter struct {}
+type DummySaltFilter struct{}
 
 func (f *DummySaltFilter) Contains([]byte) bool {
-  return false
+	return false
 }
 
 func (f *DummySaltFilter) Add([]byte) {}
 
+func (f *DummySaltFilter) Clean() {}
+
 func init() {
-  saltFilter = &DummySaltFilter{}
+	saltFilter = &DummySaltFilter{}
 }

@@ -15,26 +15,6 @@ Feel free to comment on the code, report bugs, or make feature requests. You're 
 
 Unexpected memory consumption is considered a bug. I assume that it consumes up to ~32K per connection.
 
-Why one more implementation? (Design Consideration)
----
-1. Lightweight
-    - small executable
-    - small memory footprint
-2. Compatibility
-    - [ ] Compatible to libev version, including
-        - [ ] command line options
-        - [ ] config file
-        - [ ] URI
-    - [x] Cross-platform
-3. Flexibility
-    - [ ] Well-arranged source code making it easy to modify and extend
-    - [x] Multiple client protocols support on the same port
-    - [ ] Configurable ciphers and protocols through compiler flags
-4. Documentation
-    - [ ] Full documentation on the whole project
-5. Security
-    - [ ] Best-effort security
-
 Supported Ciphers
 ---
 - AEAD
@@ -56,6 +36,33 @@ Supported Client Protocols
 * socks4a
 * HTTP proxy
 * iptables REDIRECT
+
+Third Party Libraries
+---
+| Library |              URL               |
+| ------- | ------------------------------ |
+|  pflag  | https://github.com/spf13/pflag |
+|  BoomFilters | https://github.com/tylertreat/BoomFilters |
+
+Why one more implementation? (Design Consideration)
+---
+1. Lightweight
+    - small executable
+    - small memory footprint
+2. Compatibility
+    - [ ] Compatible to libev version, including
+        - [ ] command line options
+        - [ ] config file
+        - [ ] URI
+    - [x] Cross-platform
+3. Flexibility
+    - [ ] Well-arranged source code making it easy to modify and extend
+    - [x] Multiple client protocols support on the same port
+    - [ ] Configurable ciphers and protocols through compiler flags
+4. Documentation
+    - [ ] Full documentation on the whole project
+5. Security
+    - [ ] Best-effort security
 
 TODO
 ---
