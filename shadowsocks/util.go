@@ -19,15 +19,11 @@ func IsIPv6(host string) bool {
 	return false
 }
 
-func WrapIPv6(host string) string {
-	if IsIPv6(host) {
-		return "[" + host + "]"
-	}
-	return host
-}
-
 func WrapAddr(host string, port uint16) string {
-	return WrapIPv6(host) + ":" + strconv.Itoa(int(port))
+	if IsIPv6(host) {
+		host = "[" + host + "]"
+	}
+	return host + ":" + strconv.Itoa(int(port))
 }
 
 // ParseAddress parses an address buffer into string.
