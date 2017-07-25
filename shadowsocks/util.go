@@ -11,7 +11,7 @@ import (
 // IsIP checks whether the name is an IP address,
 // and returns IP version. Returns 0 on failure.
 func IsIP(host string) int {
-  ip := net.ParseIP(host)
+	ip := net.ParseIP(host)
 	if ip == nil {
 		return 0
 	}
