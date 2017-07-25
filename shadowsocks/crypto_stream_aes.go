@@ -1,3 +1,5 @@
+// +build enable_stream_ciphers
+
 package shadowsocks
 
 import (

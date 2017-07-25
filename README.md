@@ -22,7 +22,7 @@ Supported Ciphers
   * aes-256-gcm
   * aes-192-gcm
   * aes-128-gcm
-- Stream Ciphers (I beg you not use these, it's 2017 now!)
+- Stream Ciphers (require `enable_stream_ciphers`, I beg you not to use these)
   * aes-256-cfb
   * aes-192-cfb
   * aes-128-cfb
@@ -44,28 +44,17 @@ Third Party Libraries
 |  pflag  | https://github.com/spf13/pflag |
 |  BoomFilters | https://github.com/tylertreat/BoomFilters |
 
-Why one more implementation? (Design Consideration)
+TODO
 ---
-1. Lightweight
-    - small executable
-    - small memory footprint
-2. Compatibility
+- [ ] Better log format
+- [x] Salt filter
+- [ ] Compatibility
     - [ ] Compatible to libev version, including
         - [ ] command line options
         - [ ] config file
         - [ ] URI
     - [x] Cross-platform
-3. Flexibility
-    - [ ] Well-arranged source code making it easy to modify and extend
-    - [x] Multiple client protocols support on the same port
-    - [ ] Configurable ciphers and protocols through compiler flags
-4. Documentation
-    - [ ] Full documentation on the whole project
-5. Security
-    - [ ] Best-effort security
-
-TODO
----
-- [ ] Better log format
-- [ ] Handle server and client listener errors
-- [ ] Salt filter
+- [ ] Extend config file format to support more functions
+- [ ] Manager API
+- [ ] Full documentation
+- [ ] Client route control (PAC maybe)
