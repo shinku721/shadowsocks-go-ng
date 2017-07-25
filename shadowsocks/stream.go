@@ -1,14 +1,11 @@
 package shadowsocks
 
 import (
-	"errors"
 	"io"
 	"log"
 	"net"
 	"time"
 )
-
-var BUF_SIZE_EXCEED = errors.New("Maximum buffer size exceeded")
 
 // SSBuffer contains a buffer, currently a simple []byte.
 // The content is to be sent. The capacity of the slice
@@ -30,7 +27,7 @@ func (b *SSBuffer) Expand(n int) error {
 	log.Print("SSBuffer.Expand is called, consider reconfiguring the program to eliminate it!")
 	s := cap(b.buf)
 	if s >= MAX_BUF_SIZE {
-		return BUF_SIZE_EXCEED
+		return ERR_BUF_SIZE_EXCEED
 	}
 	s *= 2
 	if s < n {

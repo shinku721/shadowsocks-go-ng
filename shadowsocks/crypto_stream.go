@@ -52,7 +52,7 @@ func (s *StreamCipherConn) SSRead(b *SSBuffer) (err error) {
 			return
 		}
 		if saltFilter.Contains(iv) {
-			return AUTH_ERROR // todo: use another error message
+			return ERR_DUP_SALT
 		}
 		saltFilter.Add(iv)
 		s.readerStream, err = s.factory.newDecipher(s.factory.key, iv)

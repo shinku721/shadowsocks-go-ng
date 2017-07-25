@@ -1,13 +1,8 @@
 package shadowsocks
 
 import (
-	"errors"
 	"net"
 )
-
-var SOCKS5_NO_VALID_AUTH = errors.New("Socks5 request requires auth")
-var SOCKS5_INVALID_PROTOCOL = errors.New("Invalid socks5 protocol")
-var SOCKS5_COMMAND_NOT_SUPPORTED = errors.New("Unsupported socks5 command")
 
 /* DetectSocks5 detects whether the buffer conatins valid socks5 request.
    Protocol definition: RFC 1928
@@ -43,7 +38,7 @@ func (ctx *ClientContext) HandleSocks5(tconn SSConn, buf *SSBuffer) (err error) 
 	if !hasNoAuth {
 		rbuf.buf = []byte{0x05, 0xFF}
 		tconn.SSWrite(rbuf)
-		return SOCKS5_NO_VALID_AUTH
+		return ERR_SOCKS5_NO_VALID_AUTH
 	}
 	rbuf.buf = rbuf.buf[:2]
 	copy(rbuf.buf, []byte{0x05, 0x00})
@@ -57,7 +52,7 @@ func (ctx *ClientContext) HandleSocks5(tconn SSConn, buf *SSBuffer) (err error) 
 	}
 	cmd := buf.buf[1]
 	if cmd != 0x01 {
-		return SOCKS5_COMMAND_NOT_SUPPORTED
+		return ERR_SOCKS5_COMMAND_NOT_SUPPORTED
 	}
 	atyp := buf.buf[3]
 	var hostlen int
@@ -68,7 +63,7 @@ func (ctx *ClientContext) HandleSocks5(tconn SSConn, buf *SSBuffer) (err error) 
 	} else if atyp == 0x03 { // Host
 		hostlen = 1 + int(buf.buf[4])
 	} else {
-		return INVALID_ADDR_TYPE
+		return ERR_SOCKS5_INVALID_PROTOCOL
 	}
 	for len(buf.buf) < 4+hostlen+2 {
 		if err = tconn.SSRead(buf); err != nil {

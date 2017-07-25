@@ -56,7 +56,7 @@ func (c *AEADConn) SSRead(b *SSBuffer) (err error) {
 			return
 		}
 		if saltFilter.Contains(salt) {
-			return AUTH_ERROR // todo: use another error message
+			return ERR_DUP_SALT
 		}
 		h := hkdf.New(sha1.New, c.factory.key, salt, []byte(HKDF_INFO))
 		skey := make([]byte, c.factory.keySize)
@@ -86,7 +86,7 @@ func (c *AEADConn) SSRead(b *SSBuffer) (err error) {
 
 	_, err = c.readerAEAD.Open(lbuf[:0], c.readerNonce, lbuf, nil)
 	if err != nil {
-		return AUTH_ERROR
+		return ERR_AUTH_FAIL
 	}
 	c.readerNonce.Inc()
 
@@ -94,7 +94,7 @@ func (c *AEADConn) SSRead(b *SSBuffer) (err error) {
 	binary.Read(bytes.NewBuffer(lbuf[:LEN_SIZE]), binary.BigEndian, &n16)
 	n := int(n16)
 	if n != (n & 0x3fff) {
-		return INVALID_CHUNK_SIZE
+		return ERR_INVALID_CHUNK_SIZE
 	}
 	if cap(b.buf)-pos < n+TAG_SIZE {
 		b.Expand(pos + n + TAG_SIZE)
@@ -108,7 +108,7 @@ func (c *AEADConn) SSRead(b *SSBuffer) (err error) {
 
 	_, err = c.readerAEAD.Open(dbuf[:0], c.readerNonce, dbuf, nil)
 	if err != nil {
-		return AUTH_ERROR
+		return ERR_AUTH_FAIL
 	}
 	c.readerNonce.Inc()
 

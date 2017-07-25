@@ -3,15 +3,11 @@ package shadowsocks
 import (
 	"bytes"
 	"encoding/binary"
-	"errors"
 	"io"
 	"net"
 	"strconv"
 	"strings"
 )
-
-var HTTP_INVALID_HEADER = errors.New("Invalid HTTP header")
-var HTTP_HOST_TOO_LONG = errors.New("HTTP host too long")
 
 /* DetectHTTP detects whether the buffer conatins valid HTTP proxy request.
    Protocol definition: RFC 7230 5.3.2, RFC 7231 4.3.6
@@ -69,7 +65,7 @@ func (ctx *ClientContext) HandleHTTP(tconn SSConn, buf *SSBuffer) (err error) {
 			pcol := strings.Index(addr, ":")
 			if pcol == -1 {
 				HTTPWrite400(tconn)
-				return HTTP_INVALID_HEADER
+				return ERR_HTTP_INVALID_HEADER
 			}
 			host := addr[:pcol]
 			var port uint16
@@ -81,7 +77,7 @@ func (ctx *ClientContext) HandleHTTP(tconn SSConn, buf *SSBuffer) (err error) {
 			}
 			if len(host) > 255 {
 				HTTPWrite400(tconn)
-				return HTTP_HOST_TOO_LONG
+				return ERR_HTTP_HOST_TOO_LONG
 			}
 			port = uint16(pport)
 

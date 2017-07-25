@@ -3,12 +3,8 @@ package shadowsocks
 import (
 	"bytes"
 	"encoding/binary"
-	"errors"
 	"net"
 )
-
-var SOCKS4_INVALID_PROTOCOL = errors.New("Invalid socks4 protocol")
-var SOCKS4_COMMAND_NOT_SUPPORTED = errors.New("Unsupported socks4 command")
 
 /* DetectSocks4 detects whether the buffer contains a valid socks4(a) request.
    Protocol definition:
@@ -30,7 +26,7 @@ func DetectSocks4(buf *SSBuffer) bool {
 func (ctx *ClientContext) HandleSocks4(tconn SSConn, buf *SSBuffer) (err error) {
 	cmd := buf.buf[1]
 	if cmd != 0x01 {
-		return SOCKS4_COMMAND_NOT_SUPPORTED
+		return ERR_SOCKS4_COMMAND_NOT_SUPPORTED
 	}
 
 	var port uint16
@@ -54,7 +50,7 @@ func (ctx *ClientContext) HandleSocks4(tconn SSConn, buf *SSBuffer) (err error) 
 		}
 		hostlen := secondNul - firstNul - 1
 		if hostlen > 255 {
-			return SOCKS4_INVALID_PROTOCOL
+			return ERR_SOCKS4_INVALID_PROTOCOL
 		}
 		buf.buf = buf.buf[:2+hostlen+2]
 		buf.buf[0] = 0x03 // Host

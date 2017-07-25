@@ -59,7 +59,7 @@ func HTTPParseHeader(tconn SSConn, buf *SSBuffer, req bool) (header HTTPHeader, 
 		}
 		pcolon := strings.Index(line, ":")
 		if pcolon == -1 {
-			err = HTTP_INVALID_HEADER
+			err = ERR_HTTP_INVALID_HEADER
 			return
 		}
 		field := line[:pcolon]
@@ -68,7 +68,7 @@ func HTTPParseHeader(tconn SSConn, buf *SSBuffer, req bool) (header HTTPHeader, 
 		if header.headers[lfield] != nil {
 			if lfield == "content-length" {
 				if content != header.headers[lfield].content {
-					err = HTTP_INVALID_HEADER
+					err = ERR_HTTP_INVALID_HEADER
 					return
 				}
 			} else {
@@ -134,7 +134,7 @@ func (header *HTTPHeader) Method() (string, error) {
 	}
 	l := strings.Index(header.startline, " ")
 	if l == -1 {
-		return "", HTTP_INVALID_HEADER
+		return "", ERR_HTTP_INVALID_HEADER
 	}
 	return header.startline[:l], nil
 }
@@ -180,11 +180,11 @@ func (header *HTTPHeader) URL() (string, error) {
 	}
 	start := strings.Index(header.startline, " ") + 1
 	if start == 0 {
-		return "", HTTP_INVALID_HEADER
+		return "", ERR_HTTP_INVALID_HEADER
 	}
 	l := strings.Index(header.startline[start:], " ")
 	if l == -1 {
-		return "", HTTP_INVALID_HEADER
+		return "", ERR_HTTP_INVALID_HEADER
 	}
 	return header.startline[start : start+l], nil
 }
@@ -196,11 +196,11 @@ func (header *HTTPHeader) URLHost() (string, error) {
 	}
 	start := strings.Index(url, "//") + 2
 	if start == 1 {
-		return "", HTTP_INVALID_HEADER
+		return "", ERR_HTTP_INVALID_HEADER
 	}
 	l := strings.Index(url[start:], "/")
 	if l == -1 {
-		return "", HTTP_INVALID_HEADER
+		return "", ERR_HTTP_INVALID_HEADER
 	}
 	return url[start : start+l], nil
 }
@@ -212,11 +212,11 @@ func (header *HTTPHeader) URLRel() (string, error) {
 	}
 	start := strings.Index(url, "//") + 2
 	if start == 1 {
-		return "", HTTP_INVALID_HEADER
+		return "", ERR_HTTP_INVALID_HEADER
 	}
 	l := strings.Index(url[start:], "/")
 	if l == -1 {
-		return "", HTTP_INVALID_HEADER
+		return "", ERR_HTTP_INVALID_HEADER
 	}
 	return url[start+l:], nil
 }
@@ -224,11 +224,11 @@ func (header *HTTPHeader) URLRel() (string, error) {
 func (header *HTTPHeader) Status() (int, error) {
 	start := strings.Index(header.startline, " ") + 1
 	if start == 0 {
-		return 0, HTTP_INVALID_HEADER
+		return 0, ERR_HTTP_INVALID_HEADER
 	}
 	l := strings.Index(header.startline[start:], " ")
 	if l == -1 {
-		return 0, HTTP_INVALID_HEADER
+		return 0, ERR_HTTP_INVALID_HEADER
 	}
 	s, err := strconv.Atoi(header.startline[start : start+l])
 	if err != nil {

@@ -3,13 +3,10 @@ package shadowsocks
 import (
 	"bytes"
 	"encoding/binary"
-	"errors"
 	"net"
 	"strconv"
 	"strings"
 )
-
-var INVALID_ADDR_TYPE = errors.New("invalid address type")
 
 // IsIPv6 checks whether an address is IPv6.
 // It does not guarantee that the address is valid,
@@ -79,7 +76,7 @@ func ParseAddress(buf []byte) (addr string, n int, err error) {
 		port := strconv.Itoa(int(p16))
 		addr = "[" + host + "]:" + port
 	} else { // error
-		err = INVALID_ADDR_TYPE
+		err = ERR_INVALID_ADDR_TYPE
 	}
 	return
 }

@@ -3,15 +3,12 @@ package shadowsocks
 import (
 	"bytes"
 	"encoding/binary"
-	"errors"
 	"log"
 	"net"
 	"strconv"
 	"strings"
 	"time"
 )
-
-var HTTP_MANAGER_DEAD = errors.New("HTTP manager dead")
 
 type HTTPConnCtx struct {
 	conn SSConn
@@ -53,7 +50,7 @@ func (m *HTTPConnectionManager) Get(addr string) (hctx *HTTPConnCtx, err error) 
 	alive := <-m.alive
 	defer func() { m.alive <- alive }()
 	if !alive {
-		return nil, HTTP_MANAGER_DEAD
+		return nil, ERR_HTTP_MANAGER_DEAD
 	}
 	for {
 		m.req <- addr
@@ -117,7 +114,7 @@ func (m *HTTPConnectionManager) run() {
 				}
 
 				if len(host) > 255 {
-					m.err <- HTTP_HOST_TOO_LONG
+					m.err <- ERR_HTTP_HOST_TOO_LONG
 					continue
 				}
 

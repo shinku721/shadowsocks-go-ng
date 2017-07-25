@@ -1,12 +1,5 @@
 package shadowsocks
 
-import (
-	"errors"
-)
-
-var SERVER_NOT_EXIST = errors.New("Server does not exist")
-var UNIMPLEMENTED = errors.New("unimplemented")
-
 type ServerManager struct {
 	servers map[string]*ServerContext
 }
@@ -33,7 +26,7 @@ func (m *ServerManager) Remove(host string, port uint16) (err error) {
 	key := WrapAddr(host, port)
 	ctx, ok := m.servers[key]
 	if !ok {
-		return SERVER_NOT_EXIST
+		return ERR_SERVER_NOT_EXIST
 	}
 	ctx.Stop() // ignoring errors
 	delete(m.servers, key)
@@ -41,5 +34,5 @@ func (m *ServerManager) Remove(host string, port uint16) (err error) {
 }
 
 func (m *ServerManager) Listen(addr string) (err error) {
-	return UNIMPLEMENTED
+	return ERR_UNIMPLEMENTED
 }

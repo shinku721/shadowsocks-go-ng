@@ -142,7 +142,7 @@ func (ctx *ServerContext) HandleConnection(conn net.Conn) {
 		if err != nil {
 			log.Print(err)
 		}
-		if err != AUTH_ERROR {
+		if !IsAuthError(err) {
 			conn.Close()
 		}
 	}()

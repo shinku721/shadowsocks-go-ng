@@ -2,16 +2,11 @@ package shadowsocks
 
 import (
 	"crypto/md5"
-	"errors"
 	"io"
 )
 
 const LEN_SIZE = 2
 const HKDF_INFO = "ss-subkey"
-
-var AUTH_ERROR = errors.New("Authentication error")
-var INVALID_CHUNK_SIZE = errors.New("Invalid chunk size")
-var MAX_CHUNK_SIZE_EXCEED = errors.New("Maximum chunk size exceeded")
 
 // Nonce is a nonce.
 type Nonce []byte
