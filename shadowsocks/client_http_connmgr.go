@@ -91,7 +91,7 @@ func (m *HTTPConnectionManager) Delete() {
 
 func (m *HTTPConnectionManager) run() {
 	var err error
-	for {
+	loop: for {
 		select {
 		case addr := <-m.req:
 			if len(m.connections[addr]) == 0 {
@@ -167,7 +167,7 @@ func (m *HTTPConnectionManager) run() {
 			hctx.conn.Close()
 		case done := <-m.done:
 			if done {
-				break
+				break loop
 			} else {
 				go func() {
 					<-m.alive
