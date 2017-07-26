@@ -91,7 +91,7 @@ func PrintHelp() {
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, "\nSupported encryption methods:\n")
 	names := make([]string, 0, len(s.Ciphers))
-	for k, _ := range s.Ciphers {
+	for k := range s.Ciphers {
 		names = append(names, k)
 	}
 	sort.Strings(names)

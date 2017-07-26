@@ -1,6 +1,6 @@
 package shadowsocks
 
-/* DetectSocks5 detects whether the buffer conatins valid socks5 request.
+/* DetectSocks5 detects whether the buffer contains valid socks5 request.
    Protocol definition: RFC 1928
    https://www.ietf.org/rfc/rfc1928.txt
 */

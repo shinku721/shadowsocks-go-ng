@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-/* DetectHTTP detects whether the buffer conatins valid HTTP proxy request.
+/* DetectHTTP detects whether the buffer contains valid HTTP proxy request.
    Protocol definition: RFC 7230 5.3.2, RFC 7231 4.3.6
    https://www.ietf.org/rfc/rfc7230.txt
    https://www.ietf.org/rfc/rfc7231.txt
