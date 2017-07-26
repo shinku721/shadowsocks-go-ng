@@ -93,8 +93,8 @@ func DPipe(conn1, conn2 SSConn, buf12, buf21 *SSBuffer, res chan error) {
 	// No need to wait for the other res because go seems
 	// not to have any half-open capability
 	select {
-		case err = <-res1:
-		case err = <-res2:
+	case err = <-res1:
+	case err = <-res2:
 	}
 	res <- err
 }

@@ -91,7 +91,8 @@ func (m *HTTPConnectionManager) Delete() {
 
 func (m *HTTPConnectionManager) run() {
 	var err error
-	loop: for {
+loop:
+	for {
 		select {
 		case addr := <-m.req:
 			if len(m.connections[addr]) == 0 {
