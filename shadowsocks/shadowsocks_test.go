@@ -67,6 +67,7 @@ func TestSimpleSocks4a(t *testing.T) {
 		},
 	})
 }
+
 /* Upstream HTTP Proxy client implementation is wrong
 func TestSimpleHTTP(t *testing.T) {
 	doTestSimple(t, &http.Client{

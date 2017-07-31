@@ -34,15 +34,15 @@ func TestChaCha20Poly1305(t *testing.T) {
 			DialContext: socks.Context,
 		},
 	}
-			request, err := requester.Get("http://127.0.0.1:8000/hello")
-			if err != nil {
-				t.Fatal(err)
-			}
-			content, err := ioutil.ReadAll(request.Body)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if string(content) != "Hello" {
-				t.Fatal("Wrong content:", string(content))
-			}
+	request, err := requester.Get("http://127.0.0.1:8000/hello")
+	if err != nil {
+		t.Fatal(err)
+	}
+	content, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(content) != "Hello" {
+		t.Fatal("Wrong content:", string(content))
+	}
 }
