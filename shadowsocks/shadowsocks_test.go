@@ -11,8 +11,6 @@ import (
 	"testing"
 )
 
-var socks5client, socks4client, httpclient proxyclient.Dial
-
 func TestMain(m *testing.M) {
 	fmt.Println("prepare testing")
 	// start http server
@@ -42,17 +40,12 @@ func TestMain(m *testing.M) {
 	go client.Run()
 	fmt.Println("Shadowsocks client is up")
 
-	proxy, _ := url.Parse("socks5://127.0.0.1:6000")
-	socks5client, _ = proxyclient.NewClient(proxy)
-	proxy, _ = url.Parse("socks4a://127.0.0.1:6000")
-	socks4client, _ = proxyclient.NewClient(proxy)
-	proxy, _ = url.Parse("http://127.0.0.1:6000")
-	httpclient, _ = proxyclient.NewClient(proxy)
-
 	os.Exit(m.Run())
 }
 
 func TestSimpleSocks5(t *testing.T) {
+	proxy, _ := url.Parse("socks5://127.0.0.1:6000")
+	socks5client, _ := proxyclient.NewClient(proxy)
 	doTestSimple(t, &http.Client{
 		Transport: &http.Transport{
 			DialContext: socks5client.Context,
@@ -61,6 +54,8 @@ func TestSimpleSocks5(t *testing.T) {
 }
 
 func TestSimpleSocks4a(t *testing.T) {
+	proxy, _ := url.Parse("socks4a://127.0.0.1:6000")
+	socks4client, _ := proxyclient.NewClient(proxy)
 	doTestSimple(t, &http.Client{
 		Transport: &http.Transport{
 			DialContext: socks4client.Context,
@@ -68,15 +63,15 @@ func TestSimpleSocks4a(t *testing.T) {
 	})
 }
 
-/* Upstream HTTP Proxy client implementation is wrong
 func TestSimpleHTTP(t *testing.T) {
+	proxy, _ := url.Parse("http://127.0.0.1:6000")
 	doTestSimple(t, &http.Client{
 		Transport: &http.Transport{
-			DialContext: httpclient.Context,
+			Proxy: http.ProxyURL(proxy),
 		},
 	})
 }
-*/
+
 func doTestSimple(t *testing.T, client *http.Client) {
 	for i := 0; i < 10; i++ {
 		request, err := client.Get("http://127.0.0.1:8000/hello")
