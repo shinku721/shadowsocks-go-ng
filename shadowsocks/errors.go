@@ -47,7 +47,9 @@ var ERR_INVALID_CHUNK_SIZE = NewError("Invalid chunk size")
 var ERR_MAX_CHUNK_SIZE_EXCEED = NewError("Maximum chunk size exceeded")
 
 var ERR_SERVER_NOT_EXIST = NewError("Server does not exist")
-var ERR_UNIMPLEMENTED = NewError("unimplemented")
+var ERR_UNIMPLEMENTED = NewError("Unimplemented")
 var ERR_INVALID_ADDR_TYPE = NewError("Invalid address type")
 
 var ERR_BUF_SIZE_EXCEED = NewError("Maximum buffer size exceeded")
+
+var ERR_INVALID_ADDR = NewError("Invalid address")

@@ -9,7 +9,7 @@ import (
 )
 
 func TestChaCha20Poly1305(t *testing.T) {
-	serverConfig := DefaultServerConfig()
+	serverConfig := DefaultConfig()
 	serverConfig.ServerHost = "127.0.0.1"
 	serverConfig.ServerPort = 7001
 	serverConfig.KeyDeriver = NewKeyDeriver([]byte("testkey"))
@@ -18,7 +18,8 @@ func TestChaCha20Poly1305(t *testing.T) {
 	go server.Run()
 	defer server.Wait()
 	defer server.Stop()
-	clientConfig := DefaultClientConfig()
+	clientConfig := DefaultConfig()
+	clientConfig.ServerHost = "127.0.0.1"
 	clientConfig.ServerPort = 7001
 	clientConfig.LocalPort = 6001
 	clientConfig.KeyDeriver = NewKeyDeriver([]byte("testkey"))

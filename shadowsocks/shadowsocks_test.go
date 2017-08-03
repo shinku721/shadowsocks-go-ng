@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 	fmt.Println("HTTP server is up")
 
 	// start shadowsocks server
-	serverConfig := DefaultServerConfig()
+	serverConfig := DefaultConfig()
 	serverConfig.ServerHost = "127.0.0.1"
 	serverConfig.ServerPort = 7000
 	serverConfig.KeyDeriver = NewKeyDeriver([]byte("testkey"))
@@ -32,7 +32,8 @@ func TestMain(m *testing.M) {
 	fmt.Println("ShadowSocks server is up")
 
 	// start shadowsocks client
-	clientConfig := DefaultClientConfig()
+	clientConfig := DefaultConfig()
+	clientConfig.ServerHost = "127.0.0.1"
 	clientConfig.ServerPort = 7000
 	clientConfig.LocalPort = 6000
 	clientConfig.KeyDeriver = NewKeyDeriver([]byte("testkey"))

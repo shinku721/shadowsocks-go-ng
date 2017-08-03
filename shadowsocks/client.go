@@ -2,7 +2,6 @@ package shadowsocks
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"strings"
@@ -26,30 +25,8 @@ type ClientContext struct {
 	httpConnectionManager *HTTPConnectionManager
 }
 
-type ClientConfig struct {
-	ServerHost string
-	ServerPort uint16
-	LocalHost  string
-	LocalPort  uint16
-	Method     string
-	KeyDeriver io.Reader
-	Timeout    time.Duration
-}
-
-func DefaultClientConfig() ClientConfig {
-	return ClientConfig{
-		ServerHost: "127.0.0.1",
-		ServerPort: 8388,
-		LocalHost:  "127.0.0.1",
-		LocalPort:  1080,
-		Method:     "chacha20-ietf-poly1305",
-		KeyDeriver: nil,
-		Timeout:    300 * time.Second,
-	}
-}
-
 // NewClientContext creates a new client context.
-func NewClientContext(config ClientConfig) (ctx ClientContext, err error) {
+func NewClientContext(config Config) (ctx ClientContext, err error) {
 	cipherInfo, ok := Ciphers[config.Method]
 	if !ok {
 		err = fmt.Errorf("Unknown cipher: %s", config.Method)
