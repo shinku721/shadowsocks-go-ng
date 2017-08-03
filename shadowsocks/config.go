@@ -28,7 +28,7 @@ type Config struct {
 
 func DefaultConfig() Config {
 	return Config{
-		ServerHost:     "0.0.0.0",
+		ServerHost:     "::",
 		ServerPort:     8388,
 		LocalHost:      "127.0.0.1",
 		LocalPort:      1080,
