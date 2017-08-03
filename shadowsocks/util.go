@@ -40,7 +40,7 @@ func UnwrapAddr(addr string) (host string, port uint16, err error) {
 			return
 		}
 		host = addr[1:p]
-		if !IsIP(host) == 6 {
+		if IsIP(host) != 6 {
 			err = ERR_INVALID_ADDR
 			return
 		}

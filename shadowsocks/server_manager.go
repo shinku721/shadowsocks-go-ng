@@ -1,8 +1,8 @@
 package shadowsocks
 
 import (
+	"bytes"
 	"encoding/json"
-	"log"
 	"net"
 	"strings"
 )
@@ -64,7 +64,7 @@ func (m *ServerManager) Listen(addr string) (err error) {
 		if !unixsock {
 			m.manager, err = net.ListenPacket("udp", addr)
 		} else {
-			m.manager, err = net.Listen("unixpacket", addr)
+			m.manager, err = net.ListenPacket("unixpacket", addr)
 		}
 		if err != nil {
 			m.manager = nil
@@ -92,12 +92,12 @@ func (m *ServerManager) RunManager() {
 		req := b[:n]
 		var cmd string
 		var data []byte
-		i := strings.Index(req, ":")
+		i := bytes.Index(req, []byte(":"))
 		if i == -1 {
 			cmd = string(req)
 		} else {
-			cmd := string(req[:i])
-			data := req[i+1:]
+			cmd = string(req[:i])
+			data = req[i+1:]
 		}
 		var res string
 		if cmd == "ping" {
