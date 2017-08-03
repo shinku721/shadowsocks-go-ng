@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"log"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -96,20 +94,16 @@ loop:
 		select {
 		case addr := <-m.req:
 			if len(m.connections[addr]) == 0 {
-				pcol := strings.Index(addr, ":")
 				var host string
 				var port uint16
-				if pcol != -1 {
-					host = addr[:pcol]
-					var pport int64
-					pport, err = strconv.ParseInt(addr[pcol+1:], 10, 32)
-					if err != nil {
-						m.err <- err
-						continue
+				var e error
+				host, port, e = UnwrapAddr(addr)
+				if e != nil {
+					if addr[0] == '[' && addr[len(addr)-1] == ']' && IsIPv6(addr[1:len(addr)-1]) {
+						host = addr[1 : len(addr)-1]
+					} else {
+						host = addr
 					}
-					port = uint16(pport)
-				} else {
-					host = addr
 					port = 80
 				}
 

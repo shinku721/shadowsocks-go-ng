@@ -234,7 +234,7 @@ func main() {
 	}
 	s.FDSetMax(maxConn)
 	if serverMode { // server
-		serverConfig := s.ServerConfig{
+		serverConfig := s.Config{
 			ServerHost:    config.serverHost,
 			Method:        config.encryptMethod,
 			ConnectV4Only: config.v4only,
@@ -266,7 +266,7 @@ func main() {
 			}
 		}
 	} else { // client
-		clientConfig := s.ClientConfig{
+		clientConfig := s.Config{
 			ServerHost: config.serverHost,
 			ServerPort: uint16(config.serverPort),
 			LocalHost:  config.localHost,

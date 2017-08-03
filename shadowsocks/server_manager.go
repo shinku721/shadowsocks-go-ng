@@ -21,7 +21,7 @@ func NewServerManager() ServerManager {
 	}
 }
 
-func (m *ServerManager) Add(config ServerConfig) (err error) {
+func (m *ServerManager) Add(config Config) (err error) {
 	key := WrapAddr(config.ServerHost, config.ServerPort)
 	var ctx ServerContext
 	ctx, err = NewServerContext(config)

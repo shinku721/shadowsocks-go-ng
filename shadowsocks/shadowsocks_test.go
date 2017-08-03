@@ -11,8 +11,6 @@ import (
 	"testing"
 )
 
-var socks5client, socks4client, httpclient proxyclient.Dial
-
 func TestMain(m *testing.M) {
 	fmt.Println("prepare testing")
 	// start http server
@@ -25,7 +23,7 @@ func TestMain(m *testing.M) {
 	fmt.Println("HTTP server is up")
 
 	// start shadowsocks server
-	serverConfig := DefaultServerConfig()
+	serverConfig := DefaultConfig()
 	serverConfig.ServerHost = "127.0.0.1"
 	serverConfig.ServerPort = 7000
 	serverConfig.KeyDeriver = NewKeyDeriver([]byte("testkey"))
@@ -34,7 +32,8 @@ func TestMain(m *testing.M) {
 	fmt.Println("ShadowSocks server is up")
 
 	// start shadowsocks client
-	clientConfig := DefaultClientConfig()
+	clientConfig := DefaultConfig()
+	clientConfig.ServerHost = "127.0.0.1"
 	clientConfig.ServerPort = 7000
 	clientConfig.LocalPort = 6000
 	clientConfig.KeyDeriver = NewKeyDeriver([]byte("testkey"))
@@ -42,83 +41,41 @@ func TestMain(m *testing.M) {
 	go client.Run()
 	fmt.Println("Shadowsocks client is up")
 
-	proxy, _ := url.Parse("socks5://127.0.0.1:6000")
-	socks5client, _ = proxyclient.NewClient(proxy)
-	proxy, _ = url.Parse("socks4a://127.0.0.1:6000")
-	socks4client, _ = proxyclient.NewClient(proxy)
-	proxy, _ = url.Parse("http://127.0.0.1:6000")
-	httpclient, _ = proxyclient.NewClient(proxy)
-
 	os.Exit(m.Run())
 }
 
 func TestSimpleSocks5(t *testing.T) {
-	client := &http.Client{
+	proxy, _ := url.Parse("socks5://127.0.0.1:6000")
+	socks5client, _ := proxyclient.NewClient(proxy)
+	doTestSimple(t, &http.Client{
 		Transport: &http.Transport{
 			DialContext: socks5client.Context,
 		},
-	}
-	for i := 0; i < 10; i++ {
-		fmt.Printf("testing socks5 request ipv4 round %d\n", i)
-		request, err := client.Get("http://127.0.0.1:8000/hello")
-		if err != nil {
-			t.Fatal(err)
-		}
-		content, err := ioutil.ReadAll(request.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if string(content) != "Hello" {
-			t.Fatal("Wrong content:", string(content))
-		}
-	}
-	for i := 0; i < 10; i++ {
-		fmt.Printf("testing socks5 request ipv6 round %d\n", i)
-		request, err := client.Get("http://[::1]:8000/hello")
-		if err != nil {
-			t.Fatal(err)
-		}
-		content, err := ioutil.ReadAll(request.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if string(content) != "Hello" {
-			t.Fatal("Wrong content:", string(content))
-		}
-	}
-}
-
-func TestSimpleSocks4(t *testing.T) {
-	client := &http.Client{
-		Transport: &http.Transport{
-			DialContext: socks4client.Context,
-		},
-	}
-	for i := 0; i < 10; i++ {
-		fmt.Printf("testing socks4 request ipv4 round %d\n", i)
-		request, err := client.Get("http://127.0.0.1:8000/hello")
-		if err != nil {
-			t.Fatal(err)
-		}
-		content, err := ioutil.ReadAll(request.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if string(content) != "Hello" {
-			t.Fatal("Wrong content:", string(content))
-		}
-	}
+	})
 }
 
 func TestSimpleSocks4a(t *testing.T) {
-	client := &http.Client{
+	proxy, _ := url.Parse("socks4a://127.0.0.1:6000")
+	socks4client, _ := proxyclient.NewClient(proxy)
+	doTestSimple(t, &http.Client{
 		Transport: &http.Transport{
 			DialContext: socks4client.Context,
 		},
-	}
+	})
+}
+
+func TestSimpleHTTP(t *testing.T) {
+	proxy, _ := url.Parse("http://127.0.0.1:6000")
+	doTestSimple(t, &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(proxy),
+		},
+	})
+}
+
+func doTestSimple(t *testing.T, client *http.Client) {
 	for i := 0; i < 10; i++ {
-		fmt.Printf("testing socks4a request hostname round %d\n", i)
-		request, err := client.Get("http://localhost:8000/hello")
+		request, err := client.Get("http://127.0.0.1:8000/hello")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -131,8 +88,20 @@ func TestSimpleSocks4a(t *testing.T) {
 		}
 	}
 	for i := 0; i < 10; i++ {
-		fmt.Printf("testing socks4a request ipv6 round %d\n", i)
 		request, err := client.Get("http://[::1]:8000/hello")
+		if err != nil {
+			t.Fatal(err)
+		}
+		content, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(content) != "Hello" {
+			t.Fatal("Wrong content:", string(content))
+		}
+	}
+	for i := 0; i < 10; i++ {
+		request, err := client.Get("http://localhost:8000/hello")
 		if err != nil {
 			t.Fatal(err)
 		}

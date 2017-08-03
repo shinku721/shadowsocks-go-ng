@@ -28,6 +28,40 @@ func WrapAddr(host string, port uint16) string {
 	return host + ":" + strconv.Itoa(int(port))
 }
 
+func UnwrapAddr(addr string) (host string, port uint16, err error) {
+	var lport int
+	if p := strings.Index(addr, "]:"); p != -1 {
+		if addr[0] != '[' {
+			err = ERR_INVALID_ADDR
+			return
+		}
+		if lport, err = strconv.Atoi(addr[p+2:]); err != nil {
+			err = ERR_INVALID_ADDR
+			return
+		}
+		host = addr[1:p]
+		if !IsIPv6(host) {
+			err = ERR_INVALID_ADDR
+			return
+		}
+	} else if p := strings.Index(addr, ":"); p != -1 {
+		if lport, err = strconv.Atoi(addr[p+1:]); err != nil {
+			err = ERR_INVALID_ADDR
+			return
+		}
+		host = addr[:p]
+	} else {
+		err = ERR_INVALID_ADDR
+		return
+	}
+	if lport < 0 || lport >= 65536 {
+		err = ERR_INVALID_ADDR
+		return
+	}
+	port = uint16(lport)
+	return
+}
+
 // ParseAddress parses an address buffer into string.
 // It returns resulting address, length of bytes required,
 // and error if exists.

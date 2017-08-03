@@ -2,7 +2,6 @@ package shadowsocks
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"strings"
@@ -22,33 +21,9 @@ type ServerContext struct {
 	timeout        time.Duration
 }
 
-// ServerConfig is a set of configuration to create a single server
-type ServerConfig struct {
-	ServerHost     string
-	ServerPort     uint16
-	Method         string
-	KeyDeriver     io.Reader
-	ConnectV4Only  bool
-	ConnectTimeout time.Duration
-	Timeout        time.Duration
-}
-
-// DefaultServerConfig creates a default recommended set of config
-func DefaultServerConfig() ServerConfig {
-	return ServerConfig{
-		ServerHost:     "::",
-		ServerPort:     8388,
-		Method:         "chacha20-ietf-poly1305",
-		KeyDeriver:     nil,
-		ConnectV4Only:  false,
-		ConnectTimeout: 15 * time.Second,
-		Timeout:        300 * time.Second,
-	}
-}
-
 // NewServerContext creates a new instance of ServerContext
 // with specified arguments.
-func NewServerContext(config ServerConfig) (ctx ServerContext, err error) {
+func NewServerContext(config Config) (ctx ServerContext, err error) {
 	var server net.Listener
 	server, err = net.Listen("tcp", WrapAddr(config.ServerHost, config.ServerPort))
 	if err != nil {

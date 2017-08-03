@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"io"
-	"strconv"
 	"strings"
 )
 
@@ -59,26 +58,18 @@ func (ctx *ClientContext) HandleHTTP(tconn SSConn, buf *SSBuffer) (err error) {
 			var addr string
 			if addr, err = header.URL(); err != nil {
 				HTTPWrite400(tconn)
-				return err
+				return
 			}
-			pcol := strings.Index(addr, ":")
-			if pcol == -1 {
+			var host string
+			var port uint16
+			if host, port, err = UnwrapAddr(addr); err != nil {
 				HTTPWrite400(tconn)
 				return ERR_HTTP_INVALID_HEADER
-			}
-			host := addr[:pcol]
-			var port uint16
-			var pport int64
-			pport, err = strconv.ParseInt(addr[pcol+1:], 10, 32)
-			if err != nil {
-				HTTPWrite400(tconn)
-				return
 			}
 			if len(host) > 255 {
 				HTTPWrite400(tconn)
 				return ERR_HTTP_HOST_TOO_LONG
 			}
-			port = uint16(pport)
 
 			rbuf := NewBuffer()
 			rbuf.buf = rbuf.buf[:len(returnEstablished)]
