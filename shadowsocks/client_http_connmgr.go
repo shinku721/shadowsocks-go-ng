@@ -99,7 +99,7 @@ loop:
 				var e error
 				host, port, e = UnwrapAddr(addr)
 				if e != nil {
-					if addr[0] == '[' && addr[len(addr)-1] == ']' && IsIPv6(addr[1:len(addr)-1]) {
+					if addr[0] == '[' && addr[len(addr)-1] == ']' && IsIP(addr[1:len(addr)-1]) == 6 {
 						host = addr[1 : len(addr)-1]
 					} else {
 						host = addr
