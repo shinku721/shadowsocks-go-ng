@@ -1,5 +1,7 @@
 language: go
 
+env:
+  - NOIPV6=1
+
 go:
-  - 1.8
-  - master
+  - 1.9

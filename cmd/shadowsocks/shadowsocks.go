@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	s "github.com/shinku721/shadowsocks-goo/shadowsocks"
+	s "github.com/shinku721/shadowsocks-go-ng/shadowsocks"
 	flag "github.com/spf13/pflag"
 	"io/ioutil"
 	"log"
