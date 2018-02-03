@@ -1,7 +1,7 @@
 shadowsocks-go-ng
 ===
 [![Travis Status](https://travis-ci.org/shinku721/shadowsocks-go-ng.svg?branch=master)](https://travis-ci.org/shinku721/shadowsocks-go-ng)
-[![Appveyor Status](https://ci.appveyor.com/api/projects/status/piqgnf46vwg1l2tk/branch/master?svg=true)](https://ci.appveyor.com/project/shinku721/shadowsocks-go-ng)
+[![Appveyor Status](https://ci.appveyor.com/api/projects/status/b28jacp73abihnku/branch/master?svg=true)](https://ci.appveyor.com/project/shinku721/shadowsocks-go-ng)
 
 Yet another shadowsocks implementation in Go.
 
