@@ -87,17 +87,19 @@ func doTestSimple(t *testing.T, client *http.Client) {
 			t.Fatal("Wrong content:", string(content))
 		}
 	}
-	for i := 0; i < 10; i++ {
-		request, err := client.Get("http://[::1]:8000/hello")
-		if err != nil {
-			t.Fatal(err)
-		}
-		content, err := ioutil.ReadAll(request.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if string(content) != "Hello" {
-			t.Fatal("Wrong content:", string(content))
+	if os.Getenv("NOIPV6") != "1" {
+		for i := 0; i < 10; i++ {
+			request, err := client.Get("http://[::1]:8000/hello")
+			if err != nil {
+				t.Fatal(err)
+			}
+			content, err := ioutil.ReadAll(request.Body)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if string(content) != "Hello" {
+				t.Fatal("Wrong content:", string(content))
+			}
 		}
 	}
 	for i := 0; i < 10; i++ {

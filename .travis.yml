@@ -1,9 +1,7 @@
 language: go
 
-sudo: required
-dist: trusty
-# workaround https://github.com/travis-ci/travis-ci/issues/8891
-group: deprecated-2017Q4
+env:
+  - NOIPV6=1
 
 go:
   - 1.8
