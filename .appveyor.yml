@@ -1,6 +1,6 @@
 version: "{build}"
 
-clone_folder: c:\gopath\src\github.com\shinku721\shadowsocks-goo
+clone_folder: c:\gopath\src\github.com\shinku721\shadowsocks-go-ng
 
 environment:
   GOPATH: c:\gopath
