@@ -127,7 +127,7 @@ func (ctx *ServerContext) HandleConnection(conn net.Conn) {
 	tconn.TCPConn.SetKeepAlive(true)
 	wconn := ctx.cipherFactory.Wrap(tconn)
 
-	buf := NewBuffer()
+	buf := NewSSBuffer()
 	var addr string
 	var ln int
 	for {
@@ -161,7 +161,7 @@ func (ctx *ServerContext) HandleConnection(conn net.Conn) {
 	trconn := PlainConn{rconn.(*net.TCPConn)}
 	trconn.TCPConn.SetNoDelay(true)
 
-	rbuf := NewBuffer()
+	rbuf := NewSSBuffer()
 	res := make(chan error, 1)
 	DPipe(wconn, trconn, buf, rbuf, res)
 

@@ -127,7 +127,7 @@ func (ctx *ClientContext) HandleConnection(conn net.Conn) {
 	tconn.TCPConn.SetKeepAlivePeriod(ctx.timeout)
 	tconn.TCPConn.SetKeepAlive(true)
 
-	buf := NewBuffer()
+	buf := NewSSBuffer()
 	if DetectRedir(tconn) {
 		err = ctx.HandleRedir(tconn, buf)
 	} else {

@@ -14,8 +14,8 @@ type SSBuffer struct {
 	buf []byte
 }
 
-// NewBuffer creates a buffer with default size.
-func NewBuffer() *SSBuffer {
+// NewSSBuffer creates a buffer with default size.
+func NewSSBuffer() *SSBuffer {
 	return &SSBuffer{buf: make([]byte, 0, DEFAULT_BUF_SIZE)}
 }
 

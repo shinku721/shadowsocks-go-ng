@@ -69,7 +69,7 @@ func DetectRedir(tconn SSConn) bool {
 }
 
 func (ctx *ClientContext) HandleRedir(tconn SSConn, buf *SSBuffer) (err error) {
-	rbuf := NewBuffer()
+	rbuf := NewSSBuffer()
 	addr, _ := getOrigAddr(tconn.(PlainConn).TCPConn)
 	if bytes.Equal(addr.IP[:12], v4InV6Prefix) {
 		buf.buf = buf.buf[:7]

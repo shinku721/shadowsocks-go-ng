@@ -30,7 +30,7 @@ func (ctx *ClientContext) HandleSocks5(tconn SSConn, buf *SSBuffer) (err error) 
 		}
 	}
 
-	rbuf := NewBuffer()
+	rbuf := NewSSBuffer()
 	if !hasNoAuth {
 		rbuf.buf = []byte{0x05, 0xFF}
 		tconn.SSWrite(rbuf)

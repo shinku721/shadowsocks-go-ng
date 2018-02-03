@@ -74,7 +74,7 @@ func (ctx *ClientContext) HandleSocks4(tconn SSConn, buf *SSBuffer) (err error) 
 		binary.Write(bytes.NewBuffer(buf.buf[:5]), binary.BigEndian, &port)
 	}
 
-	rbuf := NewBuffer()
+	rbuf := NewSSBuffer()
 	rbuf.buf = rbuf.buf[:8]
 	copy(rbuf.buf, []byte{0x00, 0x5a})
 	tconn.SSWrite(rbuf)

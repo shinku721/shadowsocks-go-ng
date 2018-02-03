@@ -71,7 +71,7 @@ func (ctx *ClientContext) HandleHTTP(tconn SSConn, buf *SSBuffer) (err error) {
 				return ERR_HTTP_HOST_TOO_LONG
 			}
 
-			rbuf := NewBuffer()
+			rbuf := NewSSBuffer()
 			rbuf.buf = rbuf.buf[:len(returnEstablished)]
 			copy(rbuf.buf, returnEstablished)
 			if err = tconn.SSWrite(rbuf); err != nil {
@@ -159,7 +159,7 @@ func (ctx *ClientContext) HandleHTTP(tconn SSConn, buf *SSBuffer) (err error) {
 				var err error
 				defer func() { rcerr <- err }()
 				var rheader HTTPHeader
-				rbuf := NewBuffer()
+				rbuf := NewSSBuffer()
 				var remoteKeepAlive bool
 				for {
 					rheader, err = HTTPParseHeader(rconn, rbuf, false)
