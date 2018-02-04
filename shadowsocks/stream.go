@@ -99,9 +99,9 @@ func DPipe(conn1, conn2 SSConn, buf12, buf21 *SSBuffer, res chan error) {
 	res <- err
 }
 
-// PlainConn is a SSConn wrapped on TCPConn.
+// PlainConn is a wrapper on TCPConn.
 type PlainConn struct {
-	TCPConn *net.TCPConn
+	*net.TCPConn
 }
 
 func (c PlainConn) SSRead(b *SSBuffer) (err error) {
