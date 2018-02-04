@@ -90,6 +90,11 @@ func ParseAddress(buf []byte) (addr string, n int, err error) {
 			return
 		}
 		host := string(buf[2 : 2+alen])
+		// invalidate hosts which contains NULs for Windows syscalls
+		if strings.Contains(host, "\x00") {
+			err = ERR_INVALID_ADDR
+			return
+		}
 		if IsIP(host) == 6 {
 			host = "[" + host + "]"
 		}
