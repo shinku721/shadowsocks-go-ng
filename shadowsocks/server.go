@@ -25,7 +25,7 @@ type ServerContext struct {
 // with specified arguments.
 func NewServerContext(config Config) (ctx ServerContext, err error) {
 	var server net.Listener
-	server, err = net.Listen("tcp", WrapAddr(config.ServerHost, config.ServerPort))
+	server, err = net.Listen("tcp", PackAddress(config.ServerHost, config.ServerPort))
 	if err != nil {
 		return
 	}

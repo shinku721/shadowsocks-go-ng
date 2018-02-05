@@ -22,7 +22,7 @@ func NewServerManager() ServerManager {
 }
 
 func (m *ServerManager) Add(config Config) (err error) {
-	key := WrapAddr(config.ServerHost, config.ServerPort)
+	key := PackAddress(config.ServerHost, config.ServerPort)
 	var ctx ServerContext
 	ctx, err = NewServerContext(config)
 	if err != nil {
@@ -34,7 +34,7 @@ func (m *ServerManager) Add(config Config) (err error) {
 }
 
 func (m *ServerManager) Remove(host string, port uint16) (err error) {
-	key := WrapAddr(host, port)
+	key := PackAddress(host, port)
 	ctx, ok := m.servers[key]
 	if !ok {
 		return ERR_SERVER_NOT_EXIST

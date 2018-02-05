@@ -21,14 +21,17 @@ func IsIP(host string) int {
 	return 4
 }
 
-func WrapAddr(host string, port uint16) string {
+// PackAddress concats a host and a port into an address
+func PackAddress(host string, port uint16) string {
 	if IsIP(host) == 6 {
 		host = "[" + host + "]"
 	}
 	return host + ":" + strconv.Itoa(int(port))
 }
 
-func UnwrapAddr(addr string) (host string, port uint16, err error) {
+// UnpackAddress splits an address into a host and a port
+// May return ERR_INVALID_ADDR
+func UnpackAddress(addr string) (host string, port uint16, err error) {
 	var lport int
 	if p := strings.Index(addr, "]:"); p != -1 {
 		if addr[0] != '[' {

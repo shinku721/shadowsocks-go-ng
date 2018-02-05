@@ -43,14 +43,14 @@ func NewClientContext(config Config) (ctx ClientContext, err error) {
 		return
 	}
 	var server net.Listener
-	server, err = net.Listen("tcp", WrapAddr(config.LocalHost, config.LocalPort))
+	server, err = net.Listen("tcp", PackAddress(config.LocalHost, config.LocalPort))
 	if err != nil {
 		return
 	}
 	ctx = ClientContext{
 		listener:      server,
 		running:       make(chan bool, 1),
-		serverAddr:    WrapAddr(config.ServerHost, config.ServerPort),
+		serverAddr:    PackAddress(config.ServerHost, config.ServerPort),
 		cipherFactory: cipherInfo.newFactory(key),
 		err:           make(chan error, 1),
 		timeout:       config.Timeout,

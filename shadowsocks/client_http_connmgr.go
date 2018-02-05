@@ -97,7 +97,7 @@ loop:
 				var host string
 				var port uint16
 				var e error
-				host, port, e = UnwrapAddr(addr)
+				host, port, e = UnpackAddress(addr)
 				if e != nil {
 					if addr[0] == '[' && addr[len(addr)-1] == ']' && IsIP(addr[1:len(addr)-1]) == 6 {
 						host = addr[1 : len(addr)-1]

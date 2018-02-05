@@ -62,7 +62,7 @@ func (ctx *ClientContext) HandleHTTP(tconn SSConn, buf *SSBuffer) (err error) {
 			}
 			var host string
 			var port uint16
-			if host, port, err = UnwrapAddr(addr); err != nil {
+			if host, port, err = UnpackAddress(addr); err != nil {
 				HTTPWrite400(tconn)
 				return ERR_HTTP_INVALID_HEADER
 			}
