@@ -1,5 +1,9 @@
 package shadowsocks
 
+import (
+  "testing"
+)
+
 func TestIsIP(t *testing.T) {
   if IsIP("127.0.0.1") != 4 {
     t.Fatal("IPv4")
