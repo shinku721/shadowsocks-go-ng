@@ -32,7 +32,7 @@ func TestUnpackAddress(t *testing.T) {
   if host, port, err = UnpackAddress("127.0.0.1:80"); err != nil || host != "127.0.0.1" || port != 80 {
     t.Fatal("IPv4/Non-IP")
   }
-  if host, port, err = UnpackAddress("[fe80::1]:160"); err != nil || host != "fe80::1" || port != 80 {
+  if host, port, err = UnpackAddress("[fe80::1]:160"); err != nil || host != "fe80::1" || port != 160 {
     t.Fatal("IPv6")
   }
   if host, port, err = UnpackAddress("127.0.0.1"); err == nil {
