@@ -70,6 +70,7 @@ func UnpackAddress(addr string) (host string, port uint16, err error) {
 // and error if exists.
 // You must check that len(buf) >= n, otherwise addr is not
 // a valid address.
+// May return ERR_INVALID_ADDR and ERR_INVALID_ADDR_TYPE
 func ParseAddress(buf []byte) (addr string, n int, err error) {
 	if len(buf) < 2 {
 		n = 2
@@ -82,10 +83,9 @@ func ParseAddress(buf []byte) (addr string, n int, err error) {
 			return
 		}
 		host := net.IPv4(buf[1], buf[2], buf[3], buf[4]).String()
-		var p16 uint16
-		binary.Read(bytes.NewBuffer(buf[5:7]), binary.BigEndian, &p16)
-		port := strconv.Itoa(int(p16))
-		addr = "[" + host + "]:" + port
+		var port uint16
+		binary.Read(bytes.NewBuffer(buf[5:7]), binary.BigEndian, &port)
+		addr = PackAddress(host, port)
 	} else if typ == 0x3 { // host
 		alen := int(buf[1])
 		n = 1 + 1 + alen + 2
@@ -98,23 +98,18 @@ func ParseAddress(buf []byte) (addr string, n int, err error) {
 			err = ERR_INVALID_ADDR
 			return
 		}
-		if IsIP(host) == 6 {
-			host = "[" + host + "]"
-		}
-		var p16 uint16
-		binary.Read(bytes.NewBuffer(buf[2+alen:n]), binary.BigEndian, &p16)
-		port := strconv.Itoa(int(p16))
-		addr = host + ":" + port
+		var port uint16
+		binary.Read(bytes.NewBuffer(buf[2+alen:n]), binary.BigEndian, &port)
+		addr = PackAddress(host, port)
 	} else if typ == 0x4 { // ipv6
 		n = 19
 		if len(buf) < n {
 			return
 		}
 		host := net.IP(buf[1:17]).String()
-		var p16 uint16
-		binary.Read(bytes.NewBuffer(buf[17:19]), binary.BigEndian, &p16)
-		port := strconv.Itoa(int(p16))
-		addr = "[" + host + "]:" + port
+		var port uint16
+		binary.Read(bytes.NewBuffer(buf[17:19]), binary.BigEndian, &port)
+		addr = PackAddress(host, port)
 	} else { // error
 		err = ERR_INVALID_ADDR_TYPE
 	}
