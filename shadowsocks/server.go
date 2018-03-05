@@ -115,7 +115,7 @@ func (ctx *ServerContext) HandleConnection(conn net.Conn) {
 	var err error
 	defer func() {
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error() + "(" + conn.(*net.TCPConn).RemoteAddr().String() + ")")
 		}
 		if !IsAuthError(err) {
 			conn.Close()
