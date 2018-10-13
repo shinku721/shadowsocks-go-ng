@@ -3,7 +3,9 @@ shadowsocks-go-ng
 [![Travis Status](https://travis-ci.org/shinku721/shadowsocks-go-ng.svg?branch=master)](https://travis-ci.org/shinku721/shadowsocks-go-ng)
 [![Appveyor Status](https://ci.appveyor.com/api/projects/status/b28jacp73abihnku/branch/master?svg=true)](https://ci.appveyor.com/project/shinku721/shadowsocks-go-ng)
 
-Yet another shadowsocks implementation in Go.
+Yet another shadowsocks implementation in Go.  
+The project is not active now. We do not need one more shadowsocks, do we?  
+I'm rather pessimistic about the near future. Technologies cannot solve all the problems.
 
 Current status
 ---
