@@ -7,16 +7,6 @@ Yet another shadowsocks implementation in Go.
 The project is not active now. We do not need one more shadowsocks, do we?  
 I'm rather pessimistic about the near future. Technologies cannot solve all the problems.
 
-Current status
----
-Work in progress. Security is not well considered yet, and there may be some bugs in protocol implementations,
-especially in HTTP proxy design due to the complexity of the specification.
-
-**Please Help** I hope someone can check the implementation of HTTP proxy, since the specification is really complicated!  
-Feel free to comment on the code, report bugs, or make feature requests. You're welcome!
-
-Unexpected memory consumption is considered a bug. I assume that it consumes up to ~32K per connection.
-
 Supported Ciphers
 ---
 - AEAD
@@ -46,17 +36,5 @@ Third Party Libraries
 |  pflag  | https://github.com/spf13/pflag |
 |  BoomFilters | https://github.com/tylertreat/BoomFilters |
 
-TODO
----
-- [ ] Better log format
-- [x] Salt filter
-- [ ] Compatibility
-    - [ ] Compatible to libev version, including
-        - [ ] command line options
-        - [ ] config file
-        - [ ] URI
-    - [x] Cross-platform
-- [ ] Extend config file format to support more functions
-- [ ] Manager API
 - [ ] Full documentation
 - [ ] Client route control (PAC maybe)
