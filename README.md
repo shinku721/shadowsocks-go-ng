@@ -36,5 +36,3 @@ Third Party Libraries
 |  pflag  | https://github.com/spf13/pflag |
 |  BoomFilters | https://github.com/tylertreat/BoomFilters |
 
-- [ ] Full documentation
-- [ ] Client route control (PAC maybe)
