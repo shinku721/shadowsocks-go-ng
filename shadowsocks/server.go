@@ -109,7 +109,6 @@ func (ctx *ServerContext) Wait() (err error) {
 
 // HandleConnection handles a newly accepted
 // connection with configured ciphers.
-// TODO: handle conditions when authentication failed
 func (ctx *ServerContext) HandleConnection(conn net.Conn) {
 	defer FDRelease()
 	var err error
@@ -119,6 +118,16 @@ func (ctx *ServerContext) HandleConnection(conn net.Conn) {
 		}
 		if !IsAuthError(err) {
 			conn.Close()
+		} else {
+			// drain all data but keep the connection
+			go func(conn net.Conn) {
+				defer conn.Close()
+				devnull := make([]byte, DEFAULT_BUF_SIZE)
+				var err error = nil
+				for err == nil {
+					_, err = conn.Read(devnull)
+				}
+			}(conn)
 		}
 	}()
 	tconn := PlainConn{conn.(*net.TCPConn)}
