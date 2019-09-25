@@ -2,7 +2,7 @@ package shadowsocks
 
 import (
 	"fmt"
-	"github.com/RouterScript/ProxyClient"
+	"golang.org/x/net/proxy"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -45,30 +45,19 @@ func TestMain(m *testing.M) {
 }
 
 func TestSimpleSocks5(t *testing.T) {
-	proxy, _ := url.Parse("socks5://127.0.0.1:6000")
-	socks5client, _ := proxyclient.NewClient(proxy)
+	socks5client, _ := proxy.SOCKS5("tcp", "127.0.0.1:6000", nil, proxy.Direct)
 	doTestSimple(t, &http.Client{
 		Transport: &http.Transport{
-			DialContext: socks5client.Context,
-		},
-	})
-}
-
-func TestSimpleSocks4a(t *testing.T) {
-	proxy, _ := url.Parse("socks4a://127.0.0.1:6000")
-	socks4client, _ := proxyclient.NewClient(proxy)
-	doTestSimple(t, &http.Client{
-		Transport: &http.Transport{
-			DialContext: socks4client.Context,
+			Dial: socks5client.Dial,
 		},
 	})
 }
 
 func TestSimpleHTTP(t *testing.T) {
-	proxy, _ := url.Parse("http://127.0.0.1:6000")
+	proxyURL, _ := url.Parse("http://127.0.0.1:6000")
 	doTestSimple(t, &http.Client{
 		Transport: &http.Transport{
-			Proxy: http.ProxyURL(proxy),
+			Proxy: http.ProxyURL(proxyURL),
 		},
 	})
 }

@@ -1,10 +1,9 @@
 package shadowsocks
 
 import (
-	"github.com/RouterScript/ProxyClient"
+	"golang.org/x/net/proxy"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"testing"
 )
 
@@ -28,11 +27,10 @@ func TestChaCha20Poly1305(t *testing.T) {
 	go client.Run()
 	defer client.Wait()
 	defer client.Stop()
-	proxy, _ := url.Parse("socks5://127.0.0.1:6001")
-	socks, _ := proxyclient.NewClient(proxy)
+	socks, _ := proxy.SOCKS5("tcp", "127.0.0.1:6001", nil, proxy.Direct)
 	requester := &http.Client{
 		Transport: &http.Transport{
-			DialContext: socks.Context,
+			Dial: socks.Dial,
 		},
 	}
 	request, err := requester.Get("http://127.0.0.1:8000/hello")
